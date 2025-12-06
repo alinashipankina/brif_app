@@ -1,0 +1,17 @@
+services:
+  db:
+    image: mysql:9.5.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=Passw0rd2
+    ports:
+      - '3307:3306'
+
+    #     db:
+    # image: postgres:15
+    # environment:
+    #   - POSTGRES_USER=postgres
+    #   - POSTGRES_PASSWORD=Passw0rd
+    #   - POSTGRES_DB=brif
+    # ports:
+    #   - '5435:5432'
+
