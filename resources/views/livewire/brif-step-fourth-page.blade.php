@@ -210,7 +210,8 @@
 
         <!-- Кнопки навигации -->
         <div class="flex justify-between pt-4 gap-4">
-            <button type="button" class="btn btn-success w-full h-14 text-lg font-semibold" id="submit-btn">
+            <button wire:click='save' type="button" class="btn btn-success w-full h-14 text-lg font-semibold"
+                id="submit-btn">
                 Отправить
                 <i class="fas fa-paper-plane ml-2"></i>
             </button>
