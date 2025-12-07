@@ -13,6 +13,11 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        cors: false,
+        cors: {
+            origin: "http://localhost:8000",
+            credentials: true
+        },
+        host: 'localhost',
+        port: 5173
     },
 });
