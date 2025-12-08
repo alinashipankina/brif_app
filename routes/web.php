@@ -4,6 +4,8 @@ use App\Livewire\BrifPage;
 use App\Livewire\BrifSeoPage;
 use App\Livewire\BrifStepThirdPage;
 use App\Livewire\BrifStepFourthPage;
+use App\Livewire\Managment\ManagmentPage;
+use App\Livewire\Managment\Index;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -16,6 +18,10 @@ Route::get('/brif-seo-step', BrifSeoPage::class)->name("brif-seo-step");
 Route::get('/brif-step-third', BrifStepThirdPage::class)->name("brif-third-step");
 Route::get('/brif-step-fourth', BrifStepFourthPage::class)->name("brif-fourth-step");
 
+
+Route::middleware(['auth'])->group(function() {
+    Route::get("/managment", ManagmentPage::class)->name("");
+});
 
 // Route::view('dashboard', 'dashboard')
 //     ->middleware(['auth', 'verified'])

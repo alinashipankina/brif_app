@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// enum Status {
+//     case Created;
+//     case InWork;
+// }
+
+
 class Questionare extends Model
 {
-    protected $table = 'questionares';
 
+    protected $table = 'questionares';
 
     protected $fillable = [
         'company_name',
@@ -22,7 +28,7 @@ class Questionare extends Model
     ];
 
     protected $attributes = [
-        'status' => 'created',
+        'status' => 'NewLead',
     ];
 
     protected $casts = [
@@ -49,7 +55,8 @@ class Questionare extends Model
             'email' => 'string',
             'usluga' => 'string',
             'user_id' => 'integer',
-            'status' => 'string'
+            'status' => 'string',
+            'comment' => 'string'
         ];
     }
 }

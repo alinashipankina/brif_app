@@ -112,6 +112,8 @@ class BrifStepFourthPage extends Component
         return view('livewire.brif-step-fourth-page');
     }
 
+
+    // TODO: На странице подтверждения успешности отправки формы, сделать очистку сессии
     private function fillForm()
     {
         FormHelper::fillFormFromSession(SessionConstants::brif_form_step1, $this->form);

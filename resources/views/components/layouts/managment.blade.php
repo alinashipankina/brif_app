@@ -19,9 +19,7 @@
 
 <body class="">
     <main>
-        <div class="container max-w-screen-lg mx-auto px-4">
-            {{ $slot }}
-        </div>
+        {{ $slot }}
     </main>
     @livewireScripts
 </body>

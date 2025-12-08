@@ -1,4 +1,4 @@
-<div class="card w-full max-w-3xl bg-base-100 shadow-xl">
+<div class="card w-full bg-base-100">
     <div class="card-body p-8">
         <!-- Логотип и заголовок -->
         <div class="text-center mb-8">
