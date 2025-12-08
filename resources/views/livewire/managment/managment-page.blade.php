@@ -361,8 +361,56 @@
                                         </div>
                                     </th>
 
-                                    {{-- Ответственный --}}
-                                    <th>Менеджер</th>
+                                    {{-- Менеджер --}}
+                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('user_id')">
+                                        <div class="flex items-center justify-between p-3">
+                                            <span>Менеджер</span>
+                                            <div class="flex flex-col">
+                                                @if ($sortField === 'user_id')
+                                                    @if ($sortDirection === 'asc')
+                                                        <svg class="w-3 h-3 text-primary" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                        <svg class="w-3 h-3 opacity-30" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                    @else
+                                                        <svg class="w-3 h-3 opacity-30" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                        <svg class="w-3 h-3 text-primary" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                    @endif
+                                                @else
+                                                    <svg class="w-3 h-3 opacity-30" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <svg class="w-3 h-3 opacity-30" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </th>
 
                                     {{-- Статус --}}
                                     <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('status')">
@@ -584,19 +632,7 @@
                                             <div class="font-medium">{{ $questionare->usluga }}</div>
                                         </td>
                                         <td>
-                                            {{-- @if ($application->responsible) --}}
-                                            {{-- <div class="flex items-center"> --}}
-                                            {{-- <div class="avatar mr-2">
-                                                <div class="w-8 rounded-full">
-                                                    <img
-                                                        src="https://ui-avatars.com/api/?name={{ urlencode($application->responsible->name) }}&background=4f46e5&color=fff" />
-                                                </div>
-                                            </div>
-                                            <span>{{ $application->responsible->name }}</span>
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400">Не назначен</span>
-                                    @endif --}}
+                                            <span>{{ $questionare->user?->name }}</span>
                                         </td>
                                         <td>
                                             <span
@@ -771,28 +807,28 @@
                         <p class="text-base font-semibold">{{ $selectedQuestionare->email }}</p>
                     </div>
 
-                    <!-- Ответственный -->
-                    {{-- <div>
+                    {{-- Ответственный --}}
+                    <div>
                         <h3 class="text-sm font-medium text-gray-500 mb-2">Ответственный</h3>
-                        @if ($selectedQuestionare->responsible)
+                        @if ($selectedQuestionare->user)
                             <div class="flex items-center p-3 bg-base-200 rounded-lg">
                                 <div class="avatar mr-3">
                                     <div class="w-12 rounded-full">
                                         <img
-                                            src="https://ui-avatars.com/api/?name={{ urlencode($selectedQuestionare->responsible->name) }}&background=4f46e5&color=fff" />
+                                            src="https://ui-avatars.com/api/?name={{ urlencode($selectedQuestionare->user->name) }}&background=4f46e5&color=fff" />
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-medium">{{ $selectedQuestionare->responsible->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $selectedQuestionare->responsible->email }}
+                                    <p class="font-medium">{{ $selectedQuestionare->user->name }}</p>
+                                    <p class="text-sm text-gray-500">{{ $selectedQuestionare->user->email }}
                                     </p>
                                 </div>
                             </div>
                         @else
                             <div class="alert alert-warning">
-                                <div>
+                                <div class="flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                                        class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -801,30 +837,17 @@
                                 </div>
                             </div>
                         @endif
-                    </div> --}}
 
-                    {{-- Ответственный --}}
-                    <div class="alert alert-warning">
-                        <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 mr-2"
-                                fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
-                            <span>Ответственный не назначен</span>
-                        </div>
-                    </div>
+                        <!-- Детали -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Дата создания</h3>
+                                <p class="text-base font-semibold">
+                                    {{ $selectedQuestionare->created_at->format('d.m.Y H:i') }}
+                                </p>
+                            </div>
 
-                    <!-- Детали -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-500 mb-1">Дата создания</h3>
-                            <p class="text-base font-semibold">
-                                {{ $selectedQuestionare->created_at->format('d.m.Y H:i') }}
-                            </p>
-                        </div>
-
-                        {{-- @if ($selectedQuestionare->taken_at)
+                            {{-- @if ($selectedQuestionare->taken_at)
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500 mb-1">Взята в работу</h3>
                                 <p class="font-medium">
@@ -841,239 +864,244 @@
                                 </p>
                             </div>
                         @endif --}}
-                    </div>
+                        </div>
 
-                    <!-- Дополнительные поля -->
-                    @if ($selectedQuestionare->fields() && $selectedQuestionare->fields()->count() > 0)
-                        <div class="mt-6">
-                            <h3 class="text-lg font-semibold mb-4">Дополнительная информация</h3>
-                            <div class="space-y-3">
-                                @foreach ($selectedQuestionare->fields as $field)
-                                    <div class="collapse collapse-arrow border border-base-300">
-                                        <input type="checkbox" class="peer" />
+                        <!-- Дополнительные поля -->
+                        @if ($selectedQuestionare->fields() && $selectedQuestionare->fields()->count() > 0)
+                            <div class="mt-6">
+                                <h3 class="text-lg font-semibold mb-4">Дополнительная информация</h3>
+                                <div class="space-y-3">
+                                    @foreach ($selectedQuestionare->fields as $field)
+                                        <div class="collapse collapse-arrow border border-base-300">
+                                            <input type="checkbox" class="peer" />
 
-                                        <div class="collapse-title font-medium flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <svg class="w-5 h-5 {{ \App\Helpers\QuestionareStatus::getIconColor($field->field_name) }}"
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="{{ \App\Helpers\QuestionareStatus::getIcon($field->field_name) }}" />
-                                                </svg>
-                                                <span>{{ \App\Helpers\QuestionareStatus::getTitle($field->field_name) }}</span>
-                                            </div>
+                                            <div class="collapse-title font-medium flex items-center justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <svg class="w-5 h-5 {{ \App\Helpers\QuestionareStatus::getIconColor($field->field_name) }}"
+                                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="{{ \App\Helpers\QuestionareStatus::getIcon($field->field_name) }}" />
+                                                    </svg>
+                                                    <span>{{ \App\Helpers\QuestionareStatus::getTitle($field->field_name) }}</span>
+                                                </div>
 
-                                            @php
-                                                // Для concurents считаем количество конкурентов
-                                                if (
-                                                    $field->field_name === 'concurents' &&
-                                                    is_array($field->field_value)
-                                                ) {
-                                                    $count = count($field->field_value);
-                                                } elseif (is_array($field->field_value)) {
-                                                    $count = count($field->field_value);
-                                                } else {
-                                                    $count = null;
-                                                }
-                                            @endphp
+                                                @php
+                                                    // Для concurents считаем количество конкурентов
+                                                    if (
+                                                        $field->field_name === 'concurents' &&
+                                                        is_array($field->field_value)
+                                                    ) {
+                                                        $count = count($field->field_value);
+                                                    } elseif (is_array($field->field_value)) {
+                                                        $count = count($field->field_value);
+                                                    } else {
+                                                        $count = null;
+                                                    }
+                                                @endphp
 
-                                            @if ($count)
-                                                <span class="badge badge-sm badge-neutral">{{ $count }}</span>
-                                            @endif
-                                        </div>
-
-                                        <div class="collapse-content">
-                                            <div class="space-y-2">
-                                                @if (is_array($field->field_value))
-                                                    {{-- Для concurents: массив конкурентов --}}
-                                                    @if ($field->field_name === 'concurents')
-                                                        @foreach ($field->field_value as $index => $competitor)
-                                                            {{-- Каждый конкурент в своей рамке --}}
-                                                            @if (is_array($competitor) && !empty($competitor['name']))
-                                                                <div class="p-4 rounded-lg border mb-3 last:mb-0">
-                                                                    <div class="space-y-3">
-                                                                        @if (!empty($competitor['name']))
-                                                                            <div>
-                                                                                <p
-                                                                                    class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                                                                    Название конкурента
-                                                                                    {{ $index + 1 }}
-                                                                                </p>
-                                                                                <p
-                                                                                    class="font-medium text-sm text-gray-900 mt-1">
-                                                                                    {{ $competitor['name'] }}
-                                                                                </p>
-                                                                            </div>
-                                                                        @endif
-
-                                                                        @if (!empty($competitor['url']))
-                                                                            <div>
-                                                                                <p
-                                                                                    class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                                                                    Сайт
-                                                                                </p>
-                                                                                <p class="text-sm text-gray-700 mt-1">
-                                                                                    @if (filter_var($competitor['url'], FILTER_VALIDATE_URL))
-                                                                                        <a href="{{ $competitor['url'] }}"
-                                                                                            target="_blank"
-                                                                                            class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                            <svg class="w-4 h-4"
-                                                                                                fill="none"
-                                                                                                stroke="currentColor"
-                                                                                                viewBox="0 0 24 24">
-                                                                                                <path
-                                                                                                    stroke-linecap="round"
-                                                                                                    stroke-linejoin="round"
-                                                                                                    stroke-width="2"
-                                                                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                            </svg>
-                                                                                            {{ $competitor['url'] }}
-                                                                                        </a>
-                                                                                    @else
-                                                                                        {{ $competitor['url'] }}
-                                                                                    @endif
-                                                                                </p>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-
-                                                        {{-- Если массив пустой --}}
-                                                        @if (count($field->field_value) === 0 ||
-                                                                (count($field->field_value) === 1 &&
-                                                                    empty($field->field_value[0]['name']) &&
-                                                                    empty($field->field_value[0]['url'])))
-                                                            <div class="p-3 text-gray-500 text-sm italic">
-                                                                Конкуренты не указаны
-                                                            </div>
-                                                        @endif
-
-                                                        {{-- Для поля urls: специальная обработка --}}
-                                                    @elseif ($field->field_name === 'urls')
-                                                        @foreach ($field->field_value as $url)
-                                                            <div class="p-3 rounded-lg border">
-                                                                @if (is_array($url))
-                                                                    {{-- Если это вложенный массив (например, для нескольких URL в одном поле) --}}
-                                                                    @foreach ($url as $item)
-                                                                        @if (filter_var($item, FILTER_VALIDATE_URL))
-                                                                            <a href="{{ $item }}"
-                                                                                target="_blank"
-                                                                                class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2 mb-2 last:mb-0">
-                                                                                <svg class="w-5 h-5" fill="none"
-                                                                                    stroke="currentColor"
-                                                                                    viewBox="0 0 24 24">
-                                                                                    <path stroke-linecap="round"
-                                                                                        stroke-linejoin="round"
-                                                                                        stroke-width="2"
-                                                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                </svg>
-                                                                                <span
-                                                                                    class="break-all">{{ $item }}</span>
-                                                                            </a>
-                                                                        @else
-                                                                            <p class="text-sm text-gray-900">
-                                                                                {{ $item }}</p>
-                                                                        @endif
-                                                                    @endforeach
-                                                                @elseif (filter_var($url, FILTER_VALIDATE_URL))
-                                                                    {{-- Одиночный URL --}}
-                                                                    <a href="{{ $url }}" target="_blank"
-                                                                        class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
-                                                                        <svg class="w-5 h-5" fill="none"
-                                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                stroke-width="2"
-                                                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                        </svg>
-                                                                        <span
-                                                                            class="break-all">{{ $url }}</span>
-                                                                    </a>
-                                                                @else
-                                                                    {{-- Не URL, обычный текст --}}
-                                                                    <p class="text-sm text-gray-900">
-                                                                        {{ $url }}</p>
-                                                                @endif
-                                                            </div>
-                                                        @endforeach
-                                                    @else
-                                                        {{-- Для других массивов --}}
-                                                        @foreach ($field->field_value as $value)
-                                                            <div class="p-3 rounded-lg border">
-                                                                @if (is_array($value))
-                                                                    <div class="flex flex-wrap gap-1">
-                                                                        @foreach ($value as $item)
-                                                                            <span
-                                                                                class="badge badge-outline">{{ $item }}</span>
-                                                                        @endforeach
-                                                                    </div>
-                                                                @else
-                                                                    <p class="text-sm text-gray-900">
-                                                                        {{ $value }}</p>
-                                                                @endif
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
-                                                @else
-                                                    {{-- Для не-массивов --}}
-                                                    <div class="p-3 rounded-lg border">
-                                                        @if ($field->field_name === 'urls' && filter_var($field->field_value, FILTER_VALIDATE_URL))
-                                                            <a href="{{ $field->field_value }}" target="_blank"
-                                                                class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
-                                                                <svg class="w-5 h-5" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round"
-                                                                        stroke-linejoin="round" stroke-width="2"
-                                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                </svg>
-                                                                <span
-                                                                    class="break-all">{{ $field->field_value }}</span>
-                                                            </a>
-                                                        @else
-                                                            <p class="text-sm text-gray-900">{{ $field->field_value }}
-                                                            </p>
-                                                        @endif
-                                                    </div>
+                                                @if ($count)
+                                                    <span
+                                                        class="badge badge-sm badge-neutral">{{ $count }}</span>
                                                 @endif
                                             </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
 
-                    <!-- Комментарии (если есть) -->
-                    @if ($selectedQuestionare->comments && $selectedQuestionare->comments->count() > 0)
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-500 mb-3">Комментарии</h3>
-                            <div class="space-y-3">
-                                @foreach ($selectedQuestionare->comments->take(3) as $comment)
-                                    <div class="chat chat-start">
-                                        <div class="chat-image avatar">
-                                            <div class="w-8 rounded-full">
-                                                <img
-                                                    src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}" />
+                                            <div class="collapse-content">
+                                                <div class="space-y-2">
+                                                    @if (is_array($field->field_value))
+                                                        {{-- Для concurents: массив конкурентов --}}
+                                                        @if ($field->field_name === 'concurents')
+                                                            @foreach ($field->field_value as $index => $competitor)
+                                                                {{-- Каждый конкурент в своей рамке --}}
+                                                                @if (is_array($competitor) && !empty($competitor['name']))
+                                                                    <div class="p-4 rounded-lg border mb-3 last:mb-0">
+                                                                        <div class="space-y-3">
+                                                                            @if (!empty($competitor['name']))
+                                                                                <div>
+                                                                                    <p
+                                                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                                                                        Название конкурента
+                                                                                        {{ $index + 1 }}
+                                                                                    </p>
+                                                                                    <p
+                                                                                        class="font-medium text-sm text-gray-900 mt-1">
+                                                                                        {{ $competitor['name'] }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
+
+                                                                            @if (!empty($competitor['url']))
+                                                                                <div>
+                                                                                    <p
+                                                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                                                                        Сайт
+                                                                                    </p>
+                                                                                    <p
+                                                                                        class="text-sm text-gray-700 mt-1">
+                                                                                        @if (filter_var($competitor['url'], FILTER_VALIDATE_URL))
+                                                                                            <a href="{{ $competitor['url'] }}"
+                                                                                                target="_blank"
+                                                                                                class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                                <svg class="w-4 h-4"
+                                                                                                    fill="none"
+                                                                                                    stroke="currentColor"
+                                                                                                    viewBox="0 0 24 24">
+                                                                                                    <path
+                                                                                                        stroke-linecap="round"
+                                                                                                        stroke-linejoin="round"
+                                                                                                        stroke-width="2"
+                                                                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                                </svg>
+                                                                                                {{ $competitor['url'] }}
+                                                                                            </a>
+                                                                                        @else
+                                                                                            {{ $competitor['url'] }}
+                                                                                        @endif
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
+
+                                                            {{-- Если массив пустой --}}
+                                                            @if (count($field->field_value) === 0 ||
+                                                                    (count($field->field_value) === 1 &&
+                                                                        empty($field->field_value[0]['name']) &&
+                                                                        empty($field->field_value[0]['url'])))
+                                                                <div class="p-3 text-gray-500 text-sm italic">
+                                                                    Конкуренты не указаны
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Для поля urls: специальная обработка --}}
+                                                        @elseif ($field->field_name === 'urls')
+                                                            @foreach ($field->field_value as $url)
+                                                                <div class="p-3 rounded-lg border">
+                                                                    @if (is_array($url))
+                                                                        {{-- Если это вложенный массив (например, для нескольких URL в одном поле) --}}
+                                                                        @foreach ($url as $item)
+                                                                            @if (filter_var($item, FILTER_VALIDATE_URL))
+                                                                                <a href="{{ $item }}"
+                                                                                    target="_blank"
+                                                                                    class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2 mb-2 last:mb-0">
+                                                                                    <svg class="w-5 h-5"
+                                                                                        fill="none"
+                                                                                        stroke="currentColor"
+                                                                                        viewBox="0 0 24 24">
+                                                                                        <path stroke-linecap="round"
+                                                                                            stroke-linejoin="round"
+                                                                                            stroke-width="2"
+                                                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                    </svg>
+                                                                                    <span
+                                                                                        class="break-all">{{ $item }}</span>
+                                                                                </a>
+                                                                            @else
+                                                                                <p class="text-sm text-gray-900">
+                                                                                    {{ $item }}</p>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @elseif (filter_var($url, FILTER_VALIDATE_URL))
+                                                                        {{-- Одиночный URL --}}
+                                                                        <a href="{{ $url }}" target="_blank"
+                                                                            class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
+                                                                            <svg class="w-5 h-5" fill="none"
+                                                                                stroke="currentColor"
+                                                                                viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round"
+                                                                                    stroke-linejoin="round"
+                                                                                    stroke-width="2"
+                                                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                            </svg>
+                                                                            <span
+                                                                                class="break-all">{{ $url }}</span>
+                                                                        </a>
+                                                                    @else
+                                                                        {{-- Не URL, обычный текст --}}
+                                                                        <p class="text-sm text-gray-900">
+                                                                            {{ $url }}</p>
+                                                                    @endif
+                                                                </div>
+                                                            @endforeach
+                                                        @else
+                                                            {{-- Для других массивов --}}
+                                                            @foreach ($field->field_value as $value)
+                                                                <div class="p-3 rounded-lg border">
+                                                                    @if (is_array($value))
+                                                                        <div class="flex flex-wrap gap-1">
+                                                                            @foreach ($value as $item)
+                                                                                <span
+                                                                                    class="badge badge-outline">{{ $item }}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @else
+                                                                        <p class="text-sm text-gray-900">
+                                                                            {{ $value }}</p>
+                                                                    @endif
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    @else
+                                                        {{-- Для не-массивов --}}
+                                                        <div class="p-3 rounded-lg border">
+                                                            @if ($field->field_name === 'urls' && filter_var($field->field_value, FILTER_VALIDATE_URL))
+                                                                <a href="{{ $field->field_value }}" target="_blank"
+                                                                    class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
+                                                                    <svg class="w-5 h-5" fill="none"
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                    </svg>
+                                                                    <span
+                                                                        class="break-all">{{ $field->field_value }}</span>
+                                                                </a>
+                                                            @else
+                                                                <p class="text-sm text-gray-900">
+                                                                    {{ $field->field_value }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="chat-bubble bg-base-200 text-gray-800">
-                                            {{ $comment->content }}
-                                        </div>
-                                        <div class="chat-footer text-xs opacity-50">
-                                            {{ $comment->created_at->diffForHumans() }}
-                                        </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                </div>
+                        @endif
 
-                <!-- Кнопки внизу панели -->
-                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
-                    {{-- <a href="" class="btn btn-outline">
+                        <!-- Комментарии (если есть) -->
+                        @if ($selectedQuestionare->comments && $selectedQuestionare->comments->count() > 0)
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-3">Комментарии</h3>
+                                <div class="space-y-3">
+                                    @foreach ($selectedQuestionare->comments->take(3) as $comment)
+                                        <div class="chat chat-start">
+                                            <div class="chat-image avatar">
+                                                <div class="w-8 rounded-full">
+                                                    <img
+                                                        src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}" />
+                                                </div>
+                                            </div>
+                                            <div class="chat-bubble bg-base-200 text-gray-800">
+                                                {{ $comment->content }}
+                                            </div>
+                                            <div class="chat-footer text-xs opacity-50">
+                                                {{ $comment->created_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Кнопки внизу панели -->
+                    <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
+                        {{-- <a href="" class="btn btn-outline">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1091,30 +1119,34 @@
                             </svg>
                             Удалить
                         </button> --}}
-                    {{-- </div> --}}
-                    <div class="flex flex-col justify-between gap-5 w-full">
-                        <button type="button" wire:click='setShowSetStatus()'
-                            class="btn btn-outline w-full">Изменить
-                            статус</button>
-                        @if ($showSetStatus)
-                            <select wire:model='selectedStatus'>
-                                <option value="">Выберите статус</option>
-                                <option value="NewLead">Новый лид</option>
-                                <option value="Qualified">Квалифицирован</option>
-                                <option value="SentProposal">Выслано КП</option>
-                                <option value="Negotiations">Переговоры</option>
-                                <option value="ClosedIntoADeal">Закрыт в сделку</option>
-                                <option value="ClosedInRefusal"">Закрыт в отказ</option>
-                            </select>
-                            <input wire:model='selectedComment' type="text" placeholder="Комментарий" />
+                        {{-- </div> --}}
 
-                            <button wire:click='changeStatus()' type="button"
-                                class="btn btn-accent">Сохранить</button>
+                        @if ($this->canEditStatus($selectedQuestionare))
+
+                            <div class="flex flex-col justify-between gap-5 w-full">
+                                <button type="button" wire:click='setShowSetStatus()'
+                                    class="btn btn-outline w-full">Изменить
+                                    статус</button>
+                                @if ($showSetStatus)
+                                    <select wire:model='selectedStatus'>
+                                        <option value="">Выберите статус</option>
+                                        <option value="NewLead">Новый лид</option>
+                                        <option value="Qualified">Квалифицирован</option>
+                                        <option value="SentProposal">Выслано КП</option>
+                                        <option value="Negotiations">Переговоры</option>
+                                        <option value="ClosedIntoADeal">Закрыт в сделку</option>
+                                        <option value="ClosedInRefusal"">Закрыт в отказ</option>
+                                    </select>
+                                    <input wire:model='selectedComment' type="text" placeholder="Комментарий" />
+
+                                    <button wire:click='changeStatus()' type="button"
+                                        class="btn btn-accent">Сохранить</button>
+                                @endif
+                            </div>
                         @endif
                     </div>
                 </div>
             </div>
-        </div>
     @endif
 </div>
 

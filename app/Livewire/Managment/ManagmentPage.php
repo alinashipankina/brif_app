@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Questionare;
 use App\Helpers\QuestionareStatus;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.managment')]
 class ManagmentPage extends Component
@@ -66,6 +67,9 @@ class ManagmentPage extends Component
     public function changeStatus() {
         $this->selectedQuestionare->status = $this->selectedStatus;
         $this->selectedQuestionare->comment = $this->selectedComment;
+        $userId = Auth::id();
+        $this->selectedQuestionare->user_id = $userId;
+
         $this->selectedQuestionare->save();
         $this->closeDetails();
     }
@@ -79,6 +83,13 @@ class ManagmentPage extends Component
             $this->sortDirection = 'asc';
         }
         $this->resetPage();
+    }
+
+    public function canEditStatus(Questionare $questionare) : bool {
+        if ($questionare->status == 'NewLead') {
+            return true;
+        }
+        return $questionare->status != 'NewLead' && $questionare->user_id == Auth::id();
     }
 
     public function toggleAdditionalFields()
