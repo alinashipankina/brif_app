@@ -6,11 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// enum Status {
-//     case Created;
-//     case InWork;
-// }
-
 
 class Questionare extends Model
 {
@@ -41,6 +36,10 @@ class Questionare extends Model
 
     public function fields(): HasMany {
         return $this->hasMany(QuestionareField::class);
+    }
+
+    public function statusHistory(): HasMany {
+        return $this->hasMany(QuestionareStatusHistory::class);
     }
 
 

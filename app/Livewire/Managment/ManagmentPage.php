@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Questionare;
 use App\Helpers\QuestionareStatus;
+use App\Models\QuestionareStatusHistory;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.managment')]
@@ -65,6 +66,16 @@ class ManagmentPage extends Component
     }
 
     public function changeStatus() {
+        $oldStatus = $this->selectedQuestionare->status;
+        $oldComment = $this->selectedQuestionare->comment;
+
+        $history = QuestionareStatusHistory::create(["status" => $oldStatus,
+            "comment"=> $oldComment,
+            "questionare_id" => $this->selectedQuestionare->id
+        ]);
+
+        $history->save();
+
         $this->selectedQuestionare->status = $this->selectedStatus;
         $this->selectedQuestionare->comment = $this->selectedComment;
         $userId = Auth::id();
@@ -88,6 +99,10 @@ class ManagmentPage extends Component
     public function canEditStatus(Questionare $questionare) : bool {
         if ($questionare->status == 'NewLead') {
             return true;
+        }
+
+        if ($questionare->status == 'ClosedIntoADeal' || $questionare->status == 'ClosedInRefusal') {
+            return false;
         }
         return $questionare->status != 'NewLead' && $questionare->user_id == Auth::id();
     }

@@ -779,12 +779,21 @@
                 </div>
 
                 <!-- Статус и кнопки действий -->
-                <div class="mb-6 flex flex-col gap-1">
-                    <h3 class="text-sm font-medium text-gray-500 mb-1">Статус</h3>
-                    <span
-                        class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['badge'] }}">
-                        {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
-                    </span>
+                <div class="mb-6 flex flex-col gap-5">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-1">Статус</h3>
+                        <span
+                            class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['badge'] }}">
+                            {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
+                        </span>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-1">Последний комментарий</h3>
+                        <span class="text">
+                            {{ $selectedQuestionare->comment }}
+                        </span>
+                    </div>
                 </div>
 
                 <!-- Основная информация -->
@@ -1072,54 +1081,27 @@
                                 </div>
                             </div>
                         @endif
-
-                        <!-- Комментарии (если есть) -->
-                        @if ($selectedQuestionare->comments && $selectedQuestionare->comments->count() > 0)
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-500 mb-3">Комментарии</h3>
-                                <div class="space-y-3">
-                                    @foreach ($selectedQuestionare->comments->take(3) as $comment)
-                                        <div class="chat chat-start">
-                                            <div class="chat-image avatar">
-                                                <div class="w-8 rounded-full">
-                                                    <img
-                                                        src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}" />
-                                                </div>
-                                            </div>
-                                            <div class="chat-bubble bg-base-200 text-gray-800">
-                                                {{ $comment->content }}
-                                            </div>
-                                            <div class="chat-footer text-xs opacity-50">
-                                                {{ $comment->created_at->diffForHumans() }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     </div>
 
                     <!-- Кнопки внизу панели -->
                     <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
-                        {{-- <a href="" class="btn btn-outline">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Редактировать
-                    </a>
+                        {{-- <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-3">История статусов</h3>
+                            <div class="space-y-3"> --}}
 
-                    <div class="flex gap-2">
-                        <button class="btn btn-error btn-outline">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            Удалить
-                        </button> --}}
-                        {{-- </div> --}}
+                        {{-- @foreach ($selectedQuestionare->statusHistory as $statusHistory)
+                                    <div class="chat chat-start">
+
+                                        <div class="chat-bubble bg-base-200 text-gray-800">
+                                            {{ $statusHistory->status }}
+                                        </div>
+                                        <div class="chat-footer text-xs opacity-50">
+                                            {{ $statusHistory->comment }}
+                                        </div>
+                                    </div>
+                                @endforeach --}}
+                        {{-- </div>
+                        </div> --}}
 
                         @if ($this->canEditStatus($selectedQuestionare))
 
@@ -1128,7 +1110,7 @@
                                     class="btn btn-outline w-full">Изменить
                                     статус</button>
                                 @if ($showSetStatus)
-                                    <select wire:model='selectedStatus'>
+                                    <select class="select w-full" wire:model='selectedStatus'>
                                         <option value="">Выберите статус</option>
                                         <option value="NewLead">Новый лид</option>
                                         <option value="Qualified">Квалифицирован</option>
@@ -1137,7 +1119,7 @@
                                         <option value="ClosedIntoADeal">Закрыт в сделку</option>
                                         <option value="ClosedInRefusal"">Закрыт в отказ</option>
                                     </select>
-                                    <input wire:model='selectedComment' type="text" placeholder="Комментарий" />
+                                    <textarea class="textarea w-full" wire:model='selectedComment' type="text" placeholder="Комментарий"></textarea>
 
                                     <button wire:click='changeStatus()' type="button"
                                         class="btn btn-accent">Сохранить</button>
