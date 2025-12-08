@@ -42,7 +42,7 @@ class BrifStepFourthPage extends Component
         $fieldSfera = QuestionareField::create([
             'questionare_id' => $question->id,
             'field_name' => 'usluga',
-            'field_value' => $this->form->sfera,
+            'field_value' => $this->form->usluga,
             ]);
 
         $fieldSfera->save();
@@ -82,15 +82,15 @@ class BrifStepFourthPage extends Component
         $fieldConcurents = QuestionareField::create([
             'questionare_id' => $question->id,
             'field_name' => 'concurents',
-            'field_value' => json_encode($this->form->concurents),
-            ]);
+            'field_value' => json_encode($this->form->concurents, JSON_UNESCAPED_UNICODE),
+        ]);
 
         $fieldConcurents->save();
 
         $fieldSegment = QuestionareField::create([
             'questionare_id' => $question->id,
             'field_name' => 'segments',
-            'field_value' => json_encode($this->form->production),
+            'field_value' => json_encode($this->form->segments),
             ]);
 
         $fieldSegment->save();

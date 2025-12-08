@@ -20,9 +20,20 @@ class QuestionareField extends Model
         return $this->belongsTo(Questionare::class);
     }
 
-    /**
-     * ACCESSOR: Получить поле в формате ключ-значение
-     */
+    public function getFieldValueAttribute($value)
+    {
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
+        return $value;
+    }
+
+    public function getDisplayValueAttribute()
+    {
+        return $this->field_value;
+    }
+
     public function getKeyValueAttribute(): array
     {
         return [

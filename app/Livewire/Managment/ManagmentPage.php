@@ -17,7 +17,7 @@ class ManagmentPage extends Component
     public $search = '';
     public $statusFilter = '';
     public $responsibleFilter = '';
-    public $perPage = 5;
+    public $perPage = 10;
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
 
@@ -28,6 +28,8 @@ class ManagmentPage extends Component
     public $showSetStatus = false;
 
     public string $selectedStatus = "";
+
+    public $showAdditionalFields = false;
 
     public string $selectedComment = "";
 
@@ -50,7 +52,6 @@ class ManagmentPage extends Component
     public function selectQuestionare(int $id) {
         $this->selectedQuestionare = Questionare::find($id);
         $this->showDetails = true;
-
     }
 
     public function closeDetails() {
@@ -67,6 +68,22 @@ class ManagmentPage extends Component
         $this->selectedQuestionare->comment = $this->selectedComment;
         $this->selectedQuestionare->save();
         $this->closeDetails();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
+    }
+
+    public function toggleAdditionalFields()
+    {
+        $this->showAdditionalFields = !$this->showAdditionalFields;
     }
 
     public function getQuestionaresProperty()
@@ -100,6 +117,7 @@ class ManagmentPage extends Component
             'new' => Questionare::where('status', 'NewLead')->count(),
         ];
     }
+
 
     public function render()
     {

@@ -29,8 +29,8 @@ class BrifStepFourthForm extends Form
 
     public string $production = "";
     public array $concurents = [
-        'name' => '',
-        'url' => ''];
+        ['name' => '', 'url' => '']
+    ];
 
     public array $segments = [''];
 
