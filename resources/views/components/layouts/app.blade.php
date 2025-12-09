@@ -14,16 +14,20 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.7/jquery.inputmask.min.js"></script>
     @vite('resources/css/app.css')
 </head>
 
 <body class="">
+    @yield('content')
     <main>
         <div class="container max-w-screen-lg mx-auto px-4">
             {{ $slot }}
         </div>
     </main>
     @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

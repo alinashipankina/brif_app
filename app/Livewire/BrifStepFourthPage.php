@@ -104,7 +104,7 @@ class BrifStepFourthPage extends Component
         $fieldMarketing->save();
 
 
-        redirect("/super-form");
+        redirect("/brif-successful");
     }
 
     public function render()

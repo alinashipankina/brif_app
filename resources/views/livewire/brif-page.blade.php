@@ -16,72 +16,85 @@
             </div>
         </div>
 
-        <!-- Форма -->
-        <form wire:submit='save' class="space-y-6">
-            <!-- ФИО, название компании -->
+        <form wire:submit.prevent='save' class="space-y-6" wire:ignore.self>
             <div class="form-control">
-                <label class="label">
+                <label class="label mb-1">
                     <span class="label-text font-semibold text-gray-700">ФИО, название компании *</span>
                 </label>
                 <input type="text" wire:model='form.name' placeholder="Иванов Иван Иванович, ООО 'Ромашка'"
-                    class="input input-bordered w-full focus:input-primary focus:outline-none h-12" />
+                    class="input input-bordered w-full focus:input-primary focus:outline-none h-12 @error('form.name') input-error @enderror" />
+                @error('form.name')
+                    <label class="label">
+                        <span class="label-text-alt text-red-600">{{ $message }}</span>
+                    </label>
+                @enderror
             </div>
 
-            <!-- Должность -->
             <div class="form-control">
-                <label class="label">
+                <label class="label mb-1">
                     <span class="label-text font-semibold text-gray-700">Должность</span>
                 </label>
                 <input type="text" wire:model='form.role' placeholder="Директор по развитию"
                     class="input input-bordered w-full focus:input-primary focus:outline-none h-12" />
             </div>
 
-            <!-- Номер телефона с маской -->
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold text-gray-700">Номер телефона*</span>
+                <label class="label mb-1">
+                    <span class="label-text font-semibold text-gray-700">Номер телефона *</span>
                 </label>
                 <div class="relative">
-                    <input type="tel" wire:model='form.phone' placeholder="+7 (999) 999-99-99"
-                        class="input input-bordered w-full focus:input-primary focus:outline-none h-12" />
+                    <input type="tel" wire:model.live.debounce.500ms='form.phone' x-data="phoneInput()"
+                        x-init="init()" @input="formatPhone($event)" @keydown="handleKeydown($event)"
+                        placeholder="+7 (999) 999-99-99"
+                        class="input input-bordered w-full focus:input-primary focus:outline-none h-12 @error('form.phone') input-error @enderror" />
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                         <i class="fas fa-phone"></i>
                     </div>
                 </div>
+                @error('form.phone')
+                    <label class="label">
+                        <span class="label-text-alt text-red-600">{{ $message }}</span>
+                    </label>
+                @enderror
             </div>
 
-            <!-- Почта с маской -->
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold text-gray-700">Электронная почта*</span>
+                <label class="label mb-1">
+                    <span class="label-text font-semibold text-gray-700">Электронная почта *</span>
                 </label>
                 <div class="relative">
                     <input type="email" wire:model='form.email' placeholder="example@domain.ru"
-                        class="input input-bordered w-full focus:input-primary focus:outline-none h-12" />
+                        class="input input-bordered w-full focus:input-primary focus:outline-none h-12 @error('form.email') input-error @enderror" />
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                         <i class="fas fa-envelope"></i>
                     </div>
                 </div>
+                @error('form.email')
+                    <label class="label">
+                        <span class="label-text-alt text-red-600">{{ $message }}</span>
+                    </label>
+                @enderror
             </div>
 
-            <!-- Наименование необходимой услуги -->
             <div class="form-control">
-                <label class="label">
+                <label class="label mb-1">
                     <span class="label-text font-semibold text-gray-700">Наименование необходимой услуги *</span>
                 </label>
                 <select wire:model='form.usluga'
-                    class="select select-bordered w-full focus:select-primary focus:outline-none h-12">
-                    <option disabled selected>Выберите услугу</option>
-                    <option value="Разработка сайта">Разработка сайта</option>
-                    <option value="Дизайн логотипа">Дизайн логотипа</option>
-                    <option value="SEO-оптимизация">SEO-оптимизация</option>
-                    <option value="Контекстная реклама">Контекстная реклама</option>
-                    <option value="Копирайтинг">Копирайтинг</option>
-                    <option value="Другое">Другое</option>
+                    class="select select-bordered w-full focus:select-primary focus:outline-none h-12 @error('form.usluga') select-error @enderror">
+                    <option disabled selected value="">Выберите услугу</option>
+                    <option value="Разработка сайта">SEO-продвижение</option>
+                    <option value="Дизайн логотипа">SEO-продвижение сайтов за рубежом</option>
+                    <option value="SEO-оптимизация">Комплексное продвижение</option>
+                    <option value="Контекстная реклама">GEO-продвижение</option>
                 </select>
+                @error('form.usluga')
+                    <label class="label">
+                        <span class="label-text-alt text-red-600">{{ $message }}</span>
+                    </label>
+                @enderror
             </div>
 
-            <!-- Прогресс-бар -->
             <div class="mt-10">
                 <div class="flex justify-between mb-2">
                     <span class="text-sm font-medium text-gray-700">Прогресс заполнения</span>
@@ -92,15 +105,13 @@
                 </div>
             </div>
 
-            <!-- Кнопка "Далее" -->
             <div class="pt-6">
                 <button type="submit" class="btn btn-primary w-full h-14 text-lg font-semibold">
                     Далее
                     <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                </button>
             </div>
 
-            <!-- Вспомогательный текст -->
             <div class="text-center mt-6">
                 <p class="text-gray-500 text-sm">
                     * Поля, обязательные для заполнения
@@ -113,3 +124,70 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('phoneInput', () => ({
+            init() {
+                this.$nextTick(() => {
+                    const input = this.$el;
+                    if (input.value && input.value.trim() !== '') {
+                        this.formatPhone({
+                            target: input
+                        });
+                    }
+                });
+            },
+
+            formatPhone(event) {
+                let input = event.target;
+                let originalValue = input.value;
+                let value = originalValue.replace(/\D/g, '');
+
+                if (value === '' && originalValue.trim() === '') {
+                    return;
+                }
+
+                if (value.length > 0) {
+                    if (value.startsWith('7') || value.startsWith('8')) {
+                        value = value.substring(1);
+                    }
+
+                    if (value.length > 10) {
+                        value = value.substring(0, 10);
+                    }
+
+                    let formatted = '+7 ';
+
+                    if (value.length > 0) {
+                        formatted += '(' + value.substring(0, 3);
+                    }
+                    if (value.length > 3) {
+                        formatted += ') ' + value.substring(3, 6);
+                    }
+                    if (value.length > 6) {
+                        formatted += '-' + value.substring(6, 8);
+                    }
+                    if (value.length > 8) {
+                        formatted += '-' + value.substring(8, 10);
+                    }
+
+                    if (input.value !== formatted) {
+                        input.value = formatted;
+
+                        setTimeout(() => {
+                            input.setSelectionRange(formatted.length, formatted.length);
+                        }, 0);
+                    }
+                }
+            },
+
+            handleKeydown(event) {
+                if (event.key === 'Backspace' && event.target.value.length <= 4) {
+                    event.preventDefault();
+                    event.target.value = '+7 ';
+                }
+            }
+        }));
+    });
+</script>

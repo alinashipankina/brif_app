@@ -23,15 +23,15 @@
                     </label>
                     <ul tabindex="0"
                         class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
+                        <div class="mb-2 p-2">
+                            <p class="font-medium">{{ auth()->user()->name }}</p>
+                            <p class="text-sm text-gray-500">{{ auth()->user()->email }}
+                            </p>
+                        </div>
                         <li>
-                            <a class="justify-between">
-                                Профиль
-                            </a>
-                        </li>
-                        <li>
-                            <a href="" class="text-error">
+                            <button wire:click='logout' type="button" class="text-error">
                                 Выйти
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -175,13 +175,16 @@
                             <label class="label">
                                 <span class="label-text">Ответственный</span>
                             </label>
-                            <select wire:model="responsibleFilter" class="select select-bordered">
+                            <select wire:model.live="responsibleFilter" class="select select-bordered">
                                 <option value="">Все сотрудники</option>
-                                {{-- @foreach ($responsibles as $responsible)
-                                <option value="{{ $responsible->id }}">
-                                    {{ $responsible->name }}
-                                </option>
-                            @endforeach --}}
+                                @foreach ($this->users as $user)
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->name }}
+                                        @if ($user->id == Auth::id())
+                                            (Вы)
+                                        @endif
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -566,7 +569,7 @@
                                     </th>
 
                                     {{-- Дата завершения --}}
-                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('updated_at')">
+                                    {{-- <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('updated_at')">
                                         <div class="flex items-center justify-between p-3">
                                             <span>Дата <br>завершения</span>
                                             <div class="flex flex-col">
@@ -614,7 +617,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                    </th>
+                                    </th> --}}
 
                                     {{-- Действия (без сортировки) --}}
                                     <th></th>
@@ -632,7 +635,11 @@
                                             <div class="font-medium">{{ $questionare->usluga }}</div>
                                         </td>
                                         <td>
-                                            <span>{{ $questionare->user?->name }}</span>
+                                            @if ($questionare->user_id)
+                                                <span>{{ $questionare->user->name }}</span>
+                                            @else
+                                                <span>-</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <span
@@ -656,9 +663,6 @@
                                             <div class="text-xs text-gray-500">
                                                 {{ $questionare->updated_at->format('H:i') }}
                                             </div>
-                                        </td>
-                                        <td>
-
                                         </td>
                                         <td>
                                             <div class="flex gap-1">
@@ -715,10 +719,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <!-- Пагинация -->
                     <div class="mt-6 w-full">
                         <div class="mb-6 flex justify-between items-center gap-1 px-6">
-                            <!-- Навигация с номерами страниц -->
                             <div class="join">
                                 {{-- Кнопка "назад" --}}
                                 <button wire:click="previousPage" @disabled($this->questionares->onFirstPage())
@@ -747,7 +749,6 @@
                                     →
                                 </button>
                             </div>
-                            <!-- Информация -->
                             <div class="text-sm text-gray-600">
                                 Страница {{ $this->questionares->currentPage() }} из
                                 {{ $this->questionares->lastPage() }}
@@ -762,13 +763,11 @@
 
     <!-- Модальное окно с деталями заявки (правая панель) -->
     @if ($showDetails && $selectedQuestionare)
-        <!-- Затемнение фона -->
         <div class="fixed inset-0 bg-opacity-50 z-40" wire:click="closeDetails"></div>
 
         <!-- Панель с деталями -->
         <div class="fixed inset-y-0 right-0 w-full md:w-1/2 lg:w-1/3 bg-base-100 shadow-2xl z-50 overflow-y-auto">
             <div class="p-6">
-                <!-- Заголовок панели -->
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">
                         Заявка #{{ $selectedQuestionare->id }}
@@ -787,13 +786,14 @@
                             {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
                         </span>
                     </div>
-
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-1">Последний комментарий</h3>
-                        <span class="text">
-                            {{ $selectedQuestionare->comment }}
-                        </span>
-                    </div>
+                    @if ($selectedQuestionare->comment)
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">Последний комментарий</h3>
+                            <span class="text">
+                                {{ $selectedQuestionare->comment }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Основная информация -->
@@ -818,7 +818,7 @@
 
                     {{-- Ответственный --}}
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-2">Ответственный</h3>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Ответственный менеджер</h3>
                         @if ($selectedQuestionare->user)
                             <div class="flex items-center p-3 bg-base-200 rounded-lg">
                                 <div class="avatar mr-3">
@@ -834,7 +834,7 @@
                                 </div>
                             </div>
                         @else
-                            <div class="alert alert-warning">
+                            <div class="alert alert-warning mb-3">
                                 <div class="flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none"
@@ -855,30 +855,12 @@
                                     {{ $selectedQuestionare->created_at->format('d.m.Y H:i') }}
                                 </p>
                             </div>
-
-                            {{-- @if ($selectedQuestionare->taken_at)
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Взята в работу</h3>
-                                <p class="font-medium">
-                                    {{ $selectedQuestionare->taken_at->format('d.m.Y H:i') }}
-                                </p>
-                            </div>
-                        @endif
-
-                        @if ($selectedQuestionare->completed_at)
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Дата завершения</h3>
-                                <p class="font-medium">
-                                    {{ $selectedQuestionare->completed_at->format('d.m.Y H:i') }}
-                                </p>
-                            </div>
-                        @endif --}}
                         </div>
 
                         <!-- Дополнительные поля -->
                         @if ($selectedQuestionare->fields() && $selectedQuestionare->fields()->count() > 0)
                             <div class="mt-6">
-                                <h3 class="text-lg font-semibold mb-4">Дополнительная информация</h3>
+                                <h3 class="text-lg font-semibold mb-3">Дополнительная информация</h3>
                                 <div class="space-y-3">
                                     @foreach ($selectedQuestionare->fields as $field)
                                         <div class="collapse collapse-arrow border border-base-300">
@@ -921,7 +903,6 @@
                                                         {{-- Для concurents: массив конкурентов --}}
                                                         @if ($field->field_name === 'concurents')
                                                             @foreach ($field->field_value as $index => $competitor)
-                                                                {{-- Каждый конкурент в своей рамке --}}
                                                                 @if (is_array($competitor) && !empty($competitor['name']))
                                                                     <div class="p-4 rounded-lg border mb-3 last:mb-0">
                                                                         <div class="space-y-3">
@@ -974,7 +955,6 @@
                                                                 @endif
                                                             @endforeach
 
-                                                            {{-- Если массив пустой --}}
                                                             @if (count($field->field_value) === 0 ||
                                                                     (count($field->field_value) === 1 &&
                                                                         empty($field->field_value[0]['name']) &&
@@ -983,13 +963,10 @@
                                                                     Конкуренты не указаны
                                                                 </div>
                                                             @endif
-
-                                                            {{-- Для поля urls: специальная обработка --}}
                                                         @elseif ($field->field_name === 'urls')
                                                             @foreach ($field->field_value as $url)
                                                                 <div class="p-3 rounded-lg border">
                                                                     @if (is_array($url))
-                                                                        {{-- Если это вложенный массив (например, для нескольких URL в одном поле) --}}
                                                                         @foreach ($url as $item)
                                                                             @if (filter_var($item, FILTER_VALIDATE_URL))
                                                                                 <a href="{{ $item }}"
@@ -1013,7 +990,6 @@
                                                                             @endif
                                                                         @endforeach
                                                                     @elseif (filter_var($url, FILTER_VALIDATE_URL))
-                                                                        {{-- Одиночный URL --}}
                                                                         <a href="{{ $url }}" target="_blank"
                                                                             class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
                                                                             <svg class="w-5 h-5" fill="none"
@@ -1028,7 +1004,6 @@
                                                                                 class="break-all">{{ $url }}</span>
                                                                         </a>
                                                                     @else
-                                                                        {{-- Не URL, обычный текст --}}
                                                                         <p class="text-sm text-gray-900">
                                                                             {{ $url }}</p>
                                                                     @endif
@@ -1084,40 +1059,47 @@
                     </div>
 
                     <!-- Кнопки внизу панели -->
-                    <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
-                        {{-- <div>
-                            <h3 class="text-sm font-medium text-gray-500 mb-3">История статусов</h3>
-                            <div class="space-y-3"> --}}
-
-                        {{-- @foreach ($selectedQuestionare->statusHistory as $statusHistory)
-                                    <div class="chat chat-start">
-
-                                        <div class="chat-bubble bg-base-200 text-gray-800">
-                                            {{ $statusHistory->status }}
-                                        </div>
-                                        <div class="chat-footer text-xs opacity-50">
-                                            {{ $statusHistory->comment }}
+                    <div class="mt-8 pt-6 border-t border-gray-200 flex-col">
+                        <details class="mb-3">
+                            <summary class="cursor-pointer font-medium text-sm text-gray-700 mb-2">
+                                История статусов ({{ $selectedQuestionare->statusHistory->count() }})
+                            </summary>
+                            <div class="mt-2 space-y-3 max-h-60 overflow-y-auto p-3 bg-base-100 rounded">
+                                @forelse ($selectedQuestionare->statusHistory as $statusHistory)
+                                    <div class="chat chat-start w-full">
+                                        <div class="chat-bubble bg-base-300 text-gray-800">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-medium">
+                                                    {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
+                                                </span>
+                                                <span class="text-xs opacity-75">
+                                                    {{ $statusHistory->created_at->format('d.m.Y H:i') }}
+                                                </span>
+                                            </div>
+                                            @if ($statusHistory->comment)
+                                                <div class="mt-1 text-sm">{{ $statusHistory->comment }}</div>
+                                            @endif
                                         </div>
                                     </div>
-                                @endforeach --}}
-                        {{-- </div>
-                        </div> --}}
+                                @empty
+                                    <div class="text-gray-400 text-sm italic">Нет истории статусов</div>
+                                @endforelse
+                            </div>
+                        </details>
 
                         @if ($this->canEditStatus($selectedQuestionare))
-
                             <div class="flex flex-col justify-between gap-5 w-full">
                                 <button type="button" wire:click='setShowSetStatus()'
                                     class="btn btn-outline w-full">Изменить
                                     статус</button>
                                 @if ($showSetStatus)
                                     <select class="select w-full" wire:model='selectedStatus'>
-                                        <option value="">Выберите статус</option>
-                                        <option value="NewLead">Новый лид</option>
-                                        <option value="Qualified">Квалифицирован</option>
-                                        <option value="SentProposal">Выслано КП</option>
-                                        <option value="Negotiations">Переговоры</option>
-                                        <option value="ClosedIntoADeal">Закрыт в сделку</option>
-                                        <option value="ClosedInRefusal"">Закрыт в отказ</option>
+                                        <option disabled selected>Выберите статус</option>
+                                        @foreach (\App\Helpers\QuestionareStatus::$questionaresLabels as $status => $label)
+                                            <option value="{{ $status }}">
+                                                {{ $label['label'] }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     <textarea class="textarea w-full" wire:model='selectedComment' type="text" placeholder="Комментарий"></textarea>
 

@@ -18,7 +18,6 @@ class BrifStepThirdForm extends Form
 
     public function __construct()
     {
-        // Инициализируем с одним пустым элементом
         $this->concurents = [
             ['name' => '', 'url' => '']
         ];

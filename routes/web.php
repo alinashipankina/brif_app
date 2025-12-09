@@ -4,6 +4,7 @@ use App\Livewire\BrifPage;
 use App\Livewire\BrifSeoPage;
 use App\Livewire\BrifStepThirdPage;
 use App\Livewire\BrifStepFourthPage;
+use App\Livewire\BrifSuccessfulPage;
 use App\Livewire\Managment\ManagmentPage;
 use App\Livewire\Managment\Index;
 use App\Livewire\Settings\Appearance;
@@ -15,13 +16,14 @@ use Laravel\Fortify\Features;
 
 Route::get('/', BrifPage::class)->name("brif");
 Route::get('/brif-seo-step', BrifSeoPage::class)->name("brif-seo-step");
-Route::get('/brif-step-third', BrifStepThirdPage::class)->name("brif-third-step");
-Route::get('/brif-step-fourth', BrifStepFourthPage::class)->name("brif-fourth-step");
-
+Route::get('/brif-third-step', BrifStepThirdPage::class)->name("brif-third-step");
+Route::get('/brif-fourth-step', BrifStepFourthPage::class)->name("brif-fourth-step");
+Route::get('/brif-successful', BrifSuccessfulPage::class)->name("brif-successful-step");
 
 Route::middleware(['auth'])->group(function() {
     Route::get("/managment", ManagmentPage::class)->name("");
 });
+
 
 // Route::view('dashboard', 'dashboard')
 //     ->middleware(['auth', 'verified'])

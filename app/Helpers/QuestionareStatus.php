@@ -82,7 +82,7 @@ class QuestionareStatus {
     public static function getFieldConfigs() {
         return [
             'urls' => [
-                'title' => 'Ссылки',
+                'title' => 'Ссылки для продвижения',
                 'icon' => 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
                 'icon_color' => 'blue',
                 'is_link' => true,
@@ -94,43 +94,43 @@ class QuestionareStatus {
                 'is_link' => false,
             ],
             'year' => [
-                'title' => 'Год',
+                'title' => 'Опыт на рынке',
                 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
                 'icon_color' => 'amber',
                 'is_link' => false,
             ],
             'geography' => [
-                'title' => 'География',
+                'title' => 'География продвижения',
                 'icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
                 'icon_color' => 'red',
                 'is_link' => false,
             ],
             'summa' => [
-                'title' => 'Бюджет',
+                'title' => 'Бюджет на SEO',
                 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
                 'icon_color' => 'emerald',
                 'is_link' => false,
             ],
             'concurents' => [
-                'title' => 'Конкуренты',
+                'title' => 'Основные конкуренты',
                 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
                 'icon_color' => 'indigo',
                 'is_link' => false,
             ],
             'marketing' => [
-                'title' => 'Маркетинг',
+                'title' => 'Откуда узнали',
                 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
                 'icon_color' => 'gray',
                 'is_link' => false,
             ],
             'production' => [
-                'title' => 'Продукция',
+                'title' => 'Продукция для продвижения',
                 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
                 'icon_color' => 'gray',
                 'is_link' => false,
             ],
             'segments' => [
-                'title' => 'Сегменты',
+                'title' => 'Сегмент потребителей',
                 'icon' => 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
                 'icon_color' => 'orange',
                 'is_link' => false,

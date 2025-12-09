@@ -6,6 +6,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Questionare;
+use App\Models\User;
 use App\Helpers\QuestionareStatus;
 use App\Models\QuestionareStatusHistory;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,7 @@ class ManagmentPage extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
 
+
     // Для модального окна
     public $selectedQuestionare = null;
     public $showDetails = false;
@@ -34,6 +36,15 @@ class ManagmentPage extends Component
     public $showAdditionalFields = false;
 
     public string $selectedComment = "";
+
+    public function logout()
+        {
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+
+            return redirect('/login');
+        }
 
     public function updatedSearch() {
         $this->resetPage();
@@ -67,14 +78,13 @@ class ManagmentPage extends Component
 
     public function changeStatus() {
         $oldStatus = $this->selectedQuestionare->status;
-        $oldComment = $this->selectedQuestionare->comment;
+        $oldComment = $this->selectedQuestionare->comment ?? '';
 
-        $history = QuestionareStatusHistory::create(["status" => $oldStatus,
+        $history = QuestionareStatusHistory::create([
+            "status" => $oldStatus,
             "comment"=> $oldComment,
             "questionare_id" => $this->selectedQuestionare->id
         ]);
-
-        $history->save();
 
         $this->selectedQuestionare->status = $this->selectedStatus;
         $this->selectedQuestionare->comment = $this->selectedComment;
@@ -120,6 +130,10 @@ class ManagmentPage extends Component
             $query->where('status', $this->statusFilter);
         }
 
+        if ($this->responsibleFilter) {
+            $query->where('user_id', $this->responsibleFilter);
+        }
+
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('company_name', 'like', '%' . $this->search . '%')
@@ -131,6 +145,11 @@ class ManagmentPage extends Component
         $query->orderBy($this->sortField, $this->sortDirection);
 
         return $query->paginate($this->perPage);
+    }
+
+    public function getUsersProperty()
+    {
+        return User::all();
     }
 
     public function getStatisticsProperty()
