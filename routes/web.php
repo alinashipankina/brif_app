@@ -1,24 +1,42 @@
 <?php
 
-use App\Livewire\BrifPage;
-use App\Livewire\BrifSeoPage;
-use App\Livewire\BrifStepThirdPage;
-use App\Livewire\BrifStepFourthPage;
-use App\Livewire\BrifSuccessfulPage;
+use Illuminate\Support\Facades\Route;
+use App\Livewire\Brif\Step1;
+use App\Livewire\Brif\Step2\Analytics;
+use App\Livewire\Brif\Step2\Content;
+use App\Livewire\Brif\Step2\Context;
+use App\Livewire\Brif\Step2\Geo;
+use App\Livewire\Brif\Step2\Outstaff;
+use App\Livewire\Brif\Step2\Performance;
+use App\Livewire\Brif\Step2\Seo;
+use App\Livewire\Brif\Step2\SeoForeign;
+use App\Livewire\Brif\Step2\Serm;
+use App\Livewire\Brif\Step3;
+use App\Livewire\Brif\Step4;
+use App\Livewire\Brif\Success;
 use App\Livewire\Managment\ManagmentPage;
 use App\Livewire\Managment\Index;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
-use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/', BrifPage::class)->name("brif");
-Route::get('/brif-seo-step', BrifSeoPage::class)->name("brif-seo-step");
-Route::get('/brif-third-step', BrifStepThirdPage::class)->name("brif-third-step");
-Route::get('/brif-fourth-step', BrifStepFourthPage::class)->name("brif-fourth-step");
-Route::get('/brif-successful', BrifSuccessfulPage::class)->name("brif-successful-step");
+Route::get('/', Step1::class)->name("brif.step1");
+
+Route::get('/brif/seo', Seo::class)->name("brif.step2.seo");
+Route::get('/brif/seo-foreign', SeoForeign::class)->name("brif.step2.seo-foreign");
+Route::get('/brif/geo', Geo::class)->name("brif.step2.geo");
+Route::get('/brif/performance', Performance::class)->name("brif.step2.performance");
+Route::get('/brif/context', Context::class)->name("brif.step2.context");
+Route::get('/brif/serm', Serm::class)->name("brif.step2.serm");
+Route::get('/brif/content', Content::class)->name("brif.step2.content");
+Route::get('/brif/analytics', Analytics::class)->name("brif.step2.analytics");
+Route::get('/brif/outstaff', Outstaff::class)->name("brif.step2.outstaff");
+
+Route::get('/brif/step3', Step3::class)->name("brif.step3");
+Route::get('/brif/step4', Step4::class)->name("brif.step4");
+Route::get('/brif/success', Success::class)->name("brif.success");
 
 Route::middleware(['auth'])->group(function() {
     Route::get("/managment", ManagmentPage::class)->name("");

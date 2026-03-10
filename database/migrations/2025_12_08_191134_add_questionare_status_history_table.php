@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
 
-            $table->unsignedBigInteger("questionare_id")->nullable(false);
+            $table->foreignId("questionare_id")
+                ->constrained('questionares')
+                ->onDelete('cascade');
             $table->string("status")->nullable(false);
-            $table->string("comment")->nullable(false);
+            $table->string("comment")->nullable();
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('questionare_status_histories');
     }
 };
