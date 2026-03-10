@@ -8,6 +8,8 @@ use App\Helpers\SessionConstants;
 use Illuminate\Support\Facades\Session;
 use App\Models\Questionare;
 use App\Models\QuestionareField;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Step4 extends Component
 {
@@ -23,9 +25,6 @@ class Step4 extends Component
 
         $this->form = array_merge($step1Data, $step2Data, $step3Data);
         $this->serviceType = $step1Data['service_type'] ?? '';
-
-        // logger('Step4 form data:', $this->form);
-        // dd($this->form);
     }
 
     private function getStep2Data($serviceType)
@@ -62,21 +61,68 @@ class Step4 extends Component
 
     public function save()
     {
-        // dd($this->form);
-        Session::put('brif_data', $this->form);
+        try {
+            DB::beginTransaction();
 
-        Session::forget(SessionConstants::STEP1_FORM);
-        Session::forget(SessionConstants::STEP3_FORM);
-        Session::forget(SessionConstants::SEO_FORM);
-        Session::forget(SessionConstants::SEO_FOREIGN_FORM);
-        Session::forget(SessionConstants::PERFORMANCE_FORM);
-        Session::forget(SessionConstants::CONTENT_FORM);
-        Session::forget(SessionConstants::CONTEXT_FORM);
-        Session::forget(SessionConstants::SERM_FORM);
-        Session::forget(SessionConstants::ANALYTICS_FORM);
-        Session::forget(SessionConstants::OUTSTAFF_FORM);
+            $questionare = Questionare::create([
+                'name' => $this->form['name'] ?? '',
+                'role' => $this->form['role'] ?? null,
+                'phone' => $this->form['phone'] ?? '',
+                'email' => $this->form['email'] ?? '',
+                'service_type' => $this->form['service_type'] ?? '',
+            ]);
 
-        return redirect()->route('brif.success');
+            if (isset($this->form['urls']) && !empty($this->form['urls'])) {
+                QuestionareField::create([
+                    'questionare_id' => $questionare->id,
+                    'field_name' => 'urls',
+                    'field_value' => json_encode($this->form['urls'], JSON_UNESCAPED_UNICODE),
+                ]);
+            }
+
+            $baseFields = ['name', 'role', 'phone', 'email', 'service_type'];
+
+            foreach ($this->form as $key => $value) {
+                if (in_array($key, $baseFields) || empty($value) || $key === 'urls')
+                    {
+                        continue;
+                    }
+
+                    $fieldValue = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+
+                    QuestionareField::create([
+                        'questionare_id' => $questionare->id,
+                        'field_name' => $key,
+                        'field_value' => $fieldValue,
+                    ]);
+            }
+            Session::put('brif_data', $this->form);
+            Session::put('last_questionare_id', $questionare->id);
+
+            Session::forget(SessionConstants::STEP1_FORM);
+            Session::forget(SessionConstants::STEP3_FORM);
+            Session::forget(SessionConstants::SEO_FORM);
+            Session::forget(SessionConstants::SEO_FOREIGN_FORM);
+            Session::forget(SessionConstants::GEO_FORM);
+            Session::forget(SessionConstants::PERFORMANCE_FORM);
+            Session::forget(SessionConstants::CONTENT_FORM);
+            Session::forget(SessionConstants::CONTEXT_FORM);
+            Session::forget(SessionConstants::SERM_FORM);
+            Session::forget(SessionConstants::ANALYTICS_FORM);
+            Session::forget(SessionConstants::OUTSTAFF_FORM);
+
+            DB::commit();
+
+            Log::info('Заявка успешно создана', ['id' => $questionare->id]);
+
+            return redirect()->route('brif.success');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Ошибка при сохранении заявки: ' . $e->getMessage());
+            session()->flash('error', 'Произошла ошибка при сохранении заявки. Пожалуйста, попробуйте снова.');
+            return null;
+        }
     }
 
     public function goBack()

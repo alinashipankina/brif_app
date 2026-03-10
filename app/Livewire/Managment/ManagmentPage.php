@@ -136,8 +136,8 @@ class ManagmentPage extends Component
 
         if ($this->search) {
             $query->where(function($q) {
-                $q->where('company_name', 'like', '%' . $this->search . '%')
-                ->orWhere('usluga', 'like', '%' . $this->search . '%')
+                $q->where('name', 'like', '%' . $this->search . '%')
+                ->orWhere('service_type', 'like', '%' . $this->search . '%')
                 ->orWhere('id', 'like', '%' . $this->search . '%');
             });
         }

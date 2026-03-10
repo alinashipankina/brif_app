@@ -10,9 +10,7 @@ class QuestionareField extends Model
     protected $table = "questionare_fields";
 
     protected $fillable = [
-        'questionare_id',
-        'field_name',
-        'field_value'
+        'questionare_id', 'field_name', 'field_value'
     ];
 
     public function questionare(): BelongsTo

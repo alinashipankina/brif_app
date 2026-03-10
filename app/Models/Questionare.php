@@ -13,13 +13,8 @@ class Questionare extends Model
     protected $table = 'questionares';
 
     protected $fillable = [
-        'company_name',
-        'role',
-        'phone',
-        'email',
-        'usluga',
-        'user_id',
-        'status'
+        'name', 'role', 'phone', 'email',
+        'service_type', 'user_id', 'status'
     ];
 
     protected $attributes = [
@@ -48,11 +43,11 @@ class Questionare extends Model
         return [
             'created_at' => 'datetime:Y-m-d',
             'updated_at' => 'datetime:Y-m-d',
-            'company_name' => 'string',
+            'name' => 'string',
             'role' => 'string',
             'phone' => 'string',
             'email' => 'string',
-            'usluga' => 'string',
+            'service_type' => 'string',
             'user_id' => 'integer',
             'status' => 'string',
             'comment' => 'string'

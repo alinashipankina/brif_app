@@ -263,11 +263,11 @@
                                     </th>
 
                                     {{-- Наименование компании --}}
-                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('company_name')">
+                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('name')">
                                         <div class="flex items-center justify-between p-3">
                                             <span>Наименование</span>
                                             <div class="flex flex-col">
-                                                @if ($sortField === 'company_name')
+                                                @if ($sortField === 'name')
                                                     @if ($sortDirection === 'asc')
                                                         <svg class="w-3 h-3 text-primary" fill="currentColor"
                                                             viewBox="0 0 20 20">
@@ -314,11 +314,11 @@
                                     </th>
 
                                     {{-- Услуга --}}
-                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('usluga')">
+                                    <th class="cursor-pointer hover:bg-base-300" wire:click="sortBy('service_type')">
                                         <div class="flex items-center justify-between p-3">
                                             <span>Услуга</span>
                                             <div class="flex flex-col">
-                                                @if ($sortField === 'usluga')
+                                                @if ($sortField === 'service_type')
                                                     @if ($sortDirection === 'asc')
                                                         <svg class="w-3 h-3 text-primary" fill="currentColor"
                                                             viewBox="0 0 20 20">
@@ -629,10 +629,10 @@
                                     <tr>
                                         <td class="font-bold">#{{ $questionare->id }}</td>
                                         <td>
-                                            <div class="font-medium">{{ $questionare->company_name }}</div>
+                                            <div class="font-medium">{{ $questionare->name }}</div>
                                         </td>
                                         <td>
-                                            <div class="font-medium">{{ $questionare->usluga }}</div>
+                                            <div class="font-medium">{{ $questionare->service_type }}</div>
                                         </td>
                                         <td>
                                             @if ($questionare->user_id)
@@ -801,7 +801,7 @@
                     <!-- Наименование -->
                     <div>
                         <h3 class="text-sm font-medium text-gray-500 mb-1">Наименование</h3>
-                        <p class="text-base font-semibold">{{ $selectedQuestionare->company_name }}</p>
+                        <p class="text-base font-semibold">{{ $selectedQuestionare->name }}</p>
                     </div>
 
                     {{-- Номер телефона --}}
