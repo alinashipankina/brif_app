@@ -3,6 +3,7 @@
 namespace App\Livewire\Brif;
 
 use Livewire\Component;
+use App\Services\PredictionService;
 use App\Helpers\StepHelper;
 use App\Helpers\SessionConstants;
 use Illuminate\Support\Facades\Session;
@@ -96,6 +97,51 @@ class Step4 extends Component
                         'field_value' => $fieldValue,
                     ]);
             }
+
+            try {
+                $predictionService = app(PredictionService::class);
+
+                $this->form['form_completion_time'] = session('form_start_time')
+                    ? now()->diffInSeconds(session('form_start_time'))
+                    : 300;
+                $this->form['day_of_week'] = (int)now()->dayOfWeek;
+                $this->form['time_of_day'] = (int)now()->hour;
+
+                $segmentsCount = 0;
+                if (isset($this->form['segments']) && is_array($this->form['segments'])) {
+                    $segmentsCount = count($this->form['segments']);
+                }
+                $this->form['segments_count'] = $segmentsCount;
+
+                $prediction = $predictionService->predict($this->form);
+
+                if ($prediction && isset($prediction['probability'])) {
+                    $questionare->prediction_probability = $prediction['probability'];
+                    $questionare->prediction_will_buy = $prediction['will_buy'] ?? false;
+                    $questionare->prediction_confidence = $prediction['confidence'] ?? 'unknown';
+                    $questionare->prediction_raw = json_encode($prediction, JSON_UNESCAPED_UNICODE);
+                    $questionare->predicted_at = now();
+                    $questionare->save();
+
+                    Log::info('ML предсказание получено', [
+                        'questionare_id' => $questionare->id,
+                        'probability' => $prediction['probability'],
+                        'will_buy' => $prediction['will_buy'] ?? false
+                    ]);
+                } else {
+                    Log::warning('ML сервис вернул пустой ответ', [
+                        'questionare_id' => $questionare->id
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                Log::error('Ошибка при получении ML предсказания', [
+                    'questionare_id' => $questionare->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+            }
+
             Session::put('brif_data', $this->form);
             Session::put('last_questionare_id', $questionare->id);
 

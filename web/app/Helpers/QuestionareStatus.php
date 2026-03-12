@@ -6,34 +6,49 @@ namespace App\Helpers;
 class QuestionareStatus {
     public static array $questionaresLabels = [
         'NewLead' => [
-            'label' => 'Новый лид',
+            'label' => 'Новая заявка',
             'badge' => 'badge-neutral',
-            'color' => 'neutral',
+            'color' => '#6B7280'
         ],
         'Qualified' => [
-            'label' => 'Квалифицирован',
+            'label' => 'Квалификация',
             'badge' => 'badge-primary',
-            'color' => 'primary',
+            'color' => '#3b82f6',
         ],
         'SentProposal' => [
-            'label' => 'Выслано КП',
-            'badge' => 'badge-accent',
-            'color' => 'accent',
+            'label' => 'Подготовка КП',
+            'badge' => 'badge-secondary',
+            'color' => '#d946ef',
+        ],
+        'ProposalPresented' => [
+            'label' => 'Презентация КП',
+            'badge' => 'badge-warning',
+            'color' => '#f59e0b',
         ],
         'Negotiations' => [
             'label' => 'Переговоры',
             'badge' => 'badge-warning',
-            'color' => 'warning',
+            'color' => '#f59e0b',
+        ],
+        'ContractSigning' => [
+            'label' => 'Подписание договора',
+            'badge' => 'badge-accent',
+            'color' => '#8b5cf6',
         ],
         'ClosedIntoADeal' => [
-            'label' => 'Закрыт в сделку',
+            'label' => 'Закрыта в сделку',
             'badge' => 'badge-success',
-            'color' => 'success',
+            'color' => '#10b981',
         ],
         'ClosedInRefusal' => [
-            'label' => 'Закрыт в отказ',
+            'label' => 'Закрыта в отказ',
             'badge' => 'badge-error',
-            'color' => 'error',
+            'color' => '#ef4444',
+        ],
+        'TransferredToPartner' => [
+            'label' => 'Передана партнеру',
+            'badge' => 'badge-neutral',
+            'color' => '#1A1A1A',
         ],
     ];
 
@@ -42,7 +57,7 @@ class QuestionareStatus {
         return [
             'in_progress' => [
                 'title' => 'В работе',
-                'statuses' => ['Qualified', 'SentProposal'],
+                'statuses' => ['Qualified', 'SentProposal', 'ProposalPresented', 'Negotiations', 'ContractSigning'],
                 'icon_color' => 'secondary',
                 'badge' => 'badge-secondary',
             ],
@@ -54,7 +69,7 @@ class QuestionareStatus {
             ],
             'completed' => [
                 'title' => 'Завершено',
-                'statuses' => ['ClosedIntoADeal', 'ClosedInRefusal'],
+                'statuses' => ['ClosedIntoADeal', 'ClosedInRefusal', 'TransferredToPartner'],
                 'icon_color' => 'success',
                 'badge' => 'badge-success',
             ],
@@ -155,7 +170,6 @@ class QuestionareStatus {
         $configs = self::getFieldConfigs();
         $color = $configs[$fieldName]['icon_color'] ?? 'gray';
 
-        // Маппинг цветов Tailwind
         $colorMap = [
             'blue' => 'text-blue-500',
             'purple' => 'text-purple-500',

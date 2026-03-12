@@ -18,23 +18,21 @@ class ManagmentPage extends Component
     use WithPagination;
 
     public $search = '';
-    public $statusFilter = '';
-    public $responsibleFilter = '';
+    public $statusFilter = [];
+    public $tempStatusFilter = [];
+    public $showStatusDropdown = false;
+    public $responsibleFilter = [];
+    public $tempResponsibleFilter = [];
+    public $showResponsibleDropdown = false;
     public $perPage = 10;
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
 
-
-    // Для модального окна
     public $selectedQuestionare = null;
     public $showDetails = false;
-
     public $showSetStatus = false;
-
     public string $selectedStatus = "";
-
     public $showAdditionalFields = false;
-
     public string $selectedComment = "";
 
     public function logout()
@@ -95,6 +93,48 @@ class ManagmentPage extends Component
         $this->closeDetails();
     }
 
+    public function canEditStatus(Questionare $questionare) : bool {
+        if ($questionare->status == 'NewLead') {
+            return true;
+        }
+
+        if (in_array($questionare->status, [
+            'ClosedIntoADeal',
+            'ClosedInRefusal',
+            'TransferredToPartner'
+        ])) {
+            return false;
+        }
+        return $questionare->user_id == Auth::id();
+    }
+
+    public function applyStatusFilter()
+    {
+        $this->statusFilter = $this->tempStatusFilter;
+        $this->showStatusDropdown = false;
+        $this->resetPage();
+    }
+
+    public function resetTempStatusFilter()
+    {
+        $this->tempStatusFilter = $this->statusFilter;
+    }
+
+    public function clearStatusFilter()
+    {
+        $this->statusFilter = [];
+        $this->tempStatusFilter = [];
+        $this->resetPage();
+    }
+
+    public function removeStatus($status)
+    {
+        $this->statusFilter = array_filter($this->statusFilter, function($s) use ($status) {
+            return $s != $status;
+        });
+        $this->tempStatusFilter = $this->statusFilter;
+        $this->resetPage();
+    }
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -106,15 +146,41 @@ class ManagmentPage extends Component
         $this->resetPage();
     }
 
-    public function canEditStatus(Questionare $questionare) : bool {
-        if ($questionare->status == 'NewLead') {
-            return true;
-        }
+    public function applyResponsibleFilter()
+    {
+        $this->responsibleFilter = $this->tempResponsibleFilter;
+        $this->showResponsibleDropdown = false;
+        $this->resetPage();
+    }
 
-        if ($questionare->status == 'ClosedIntoADeal' || $questionare->status == 'ClosedInRefusal') {
-            return false;
+    public function resetTempResponsibleFilter()
+    {
+        $this->tempResponsibleFilter = $this->responsibleFilter;
+    }
+
+    public function clearResponsibleFilter()
+    {
+        $this->responsibleFilter = [];
+        $this->tempResponsibleFilter = [];
+        $this->resetPage();
+    }
+
+    public function removeResponsible($userId)
+    {
+        $this->responsibleFilter = array_filter($this->responsibleFilter, function($id) use ($userId) {
+            return $id != $userId;
+        });
+        $this->tempResponsibleFilter = $this->responsibleFilter;
+        $this->resetPage();
+    }
+
+    public function clearSort($field = null)
+    {
+        if ($field && $this->sortField === $field) {
+            $this->sortField = 'created_at';
+            $this->sortDirection = 'desc';
+            $this->resetPage();
         }
-        return $questionare->status != 'NewLead' && $questionare->user_id == Auth::id();
     }
 
     public function toggleAdditionalFields()
@@ -126,12 +192,12 @@ class ManagmentPage extends Component
     {
         $query = Questionare::query();
 
-        if ($this->statusFilter) {
-            $query->where('status', $this->statusFilter);
+        if (!empty($this->statusFilter)) {
+            $query->whereIn('status', $this->statusFilter);
         }
 
-        if ($this->responsibleFilter) {
-            $query->where('user_id', $this->responsibleFilter);
+        if (!empty($this->responsibleFilter)) {
+            $query->whereIn('user_id', $this->responsibleFilter);
         }
 
         if ($this->search) {
@@ -156,10 +222,20 @@ class ManagmentPage extends Component
     {
         return [
             'total' => Questionare::count(),
-            'in_progress' => Questionare::whereIn('status', ['Qualified', 'SentProposal'])->count(),
-            'waiting' => Questionare::where('status', 'Negotiations')->count(),
-            'completed' => Questionare::whereIn('status', ['ClosedIntoADeal', 'ClosedInRefusal'])->count(),
             'new' => Questionare::where('status', 'NewLead')->count(),
+            'in_progress' => Questionare::whereIn('status', [
+                'Qualified',
+                'SentProposal',
+                'ProposalPresented',
+                'Negotiations',
+                'ContractSigning'
+            ])->count(),
+            'completed' => Questionare::whereIn('status', [
+                'ClosedIntoADeal',
+                'ClosedInRefusal',
+                'TransferredToPartner'
+            ])->count(),
+
         ];
     }
 
@@ -167,6 +243,10 @@ class ManagmentPage extends Component
     public function render()
     {
 
-        return view('livewire.managment.managment-page');
+        return view('livewire.managment.managment-page', [
+            'questionares' => $this->questionares,
+            'users' => $this->users,
+            'statistics' => $this->statistics
+        ]);
     }
 }
