@@ -1,7 +1,10 @@
 <div
     class="card w-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 rounded-none border border-[#E8E8E8]">
     <div class="card-body p-8 md:p-10">
-        @include('livewire.brif.partials.logo-summary')
+        @include('livewire.brif.partials.logo-summary', [
+            'stepNumber' => $stepNumber,
+            'totalSteps' => $totalSteps,
+        ])
 
         <form wire:submit='save' class="space-y-8" wire:ignore.self>
             <div class="form-control">
@@ -134,7 +137,7 @@
                 <label class="label mb-1.5 md:mb-2">
                     <span
                         class="label-text font-medium text-[#1A1A1A] text-xs md:text-sm uppercase tracking-wider break-words">
-                        Языки сайта <span class="text-[#6B6B6B]">*</span>
+                        На каких языках требуется продвижение <span class="text-[#6B6B6B]">*</span>
                     </span>
                     @error('form.languages')
                         <label class="label">

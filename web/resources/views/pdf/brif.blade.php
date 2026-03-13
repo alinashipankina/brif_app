@@ -244,14 +244,14 @@
             <table class="data-table">
                 @if (!empty($form['production']))
                     <tr>
-                        <td class="label">Продукция:</td>
+                        <td class="label">Продукция для продвижения:</td>
                         <td class="value">{{ $form['production'] }}</td>
                     </tr>
                 @endif
 
                 @if (isset($form['concurents']) && count($form['concurents']) > 0)
                     <tr>
-                        <td class="label">Конкуренты:</td>
+                        <td class="label">Основные конкуренты:</td>
                         <td class="value">
                             @foreach ($form['concurents'] as $concurent)
                                 <div>{{ $c['name'] ?? '' }}
@@ -266,7 +266,7 @@
 
                 @if (isset($form['segments']) && count($form['segments']) > 0)
                     <tr>
-                        <td class="label">Сегменты:</td>
+                        <td class="label">Сегменты потребителей:</td>
                         <td class="value">
                             <div class="segments-wrapper">
                                 @foreach ($form['segments'] as $segment)
@@ -279,7 +279,7 @@
 
                 @if (!empty($form['marketing']))
                     <tr>
-                        <td class="label">Источник:</td>
+                        <td class="label">Откуда узнали:</td>
                         <td class="value">{{ $form['marketing'] }}</td>
                     </tr>
                 @endif

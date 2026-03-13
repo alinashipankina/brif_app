@@ -3,6 +3,7 @@
 namespace App\Livewire\Brif\Step2;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Session;
 use App\Helpers\FormHelper;
 use App\Helpers\StepHelper;
 use App\Helpers\SessionConstants;
@@ -14,8 +15,12 @@ class Serm extends Component
 
     public function mount()
     {
+        StepHelper::setStepNumber(2);
+
         $this->resetErrorBag();
         $this->resetValidation();
+
+        Session::put('current_step', 2);
 
         FormHelper::fillFormFromSession(SessionConstants::SERM_FORM, $this->form);
 
@@ -34,6 +39,8 @@ class Serm extends Component
 
     public function save()
     {
+        Session::put('current_step', 2);
+
         $this->validate([
             'form.company_name' => 'required',
             'form.urls' => 'required|array|min:1',

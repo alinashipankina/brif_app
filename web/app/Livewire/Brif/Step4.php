@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Services\PredictionService;
 use App\Helpers\StepHelper;
 use App\Helpers\SessionConstants;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Session;
 use App\Models\Questionare;
 use App\Models\QuestionareField;
@@ -19,7 +20,6 @@ class Step4 extends Component
 
     public function mount()
     {
-
         $step1Data = Session::get(SessionConstants::STEP1_FORM, []);
         $step3Data = Session::get(SessionConstants::STEP3_FORM, []);
         $step2Data = $this->getStep2Data($step1Data['service_type'] ?? '');
@@ -113,7 +113,13 @@ class Step4 extends Component
                 }
                 $this->form['segments_count'] = $segmentsCount;
 
+                // Логируем данные перед отправкой в ML
+                Log::info('Отправка данных в ML сервис', ['data' => $this->form]);
+
                 $prediction = $predictionService->predict($this->form);
+
+                // Логируем ответ от ML сервиса
+                Log::info('Ответ от ML сервиса', ['prediction' => $prediction]);
 
                 if ($prediction && isset($prediction['probability'])) {
                     $questionare->prediction_probability = $prediction['probability'];
@@ -123,14 +129,16 @@ class Step4 extends Component
                     $questionare->predicted_at = now();
                     $questionare->save();
 
-                    Log::info('ML предсказание получено', [
+                    Log::info('ML предсказание сохранено', [
                         'questionare_id' => $questionare->id,
                         'probability' => $prediction['probability'],
-                        'will_buy' => $prediction['will_buy'] ?? false
+                        'will_buy' => $prediction['will_buy'] ?? false,
+                        'confidence' => $prediction['confidence'] ?? 'unknown'
                     ]);
                 } else {
-                    Log::warning('ML сервис вернул пустой ответ', [
-                        'questionare_id' => $questionare->id
+                    Log::warning('ML сервис вернул пустой ответ или нет probability', [
+                        'questionare_id' => $questionare->id,
+                        'prediction' => $prediction
                     ]);
                 }
 
@@ -159,7 +167,7 @@ class Step4 extends Component
 
             DB::commit();
 
-            Log::info('Заявка успешно создана', ['id' => $questionare->id]);
+            StepHelper::resetStep();
 
             return redirect()->route('brif.success');
 

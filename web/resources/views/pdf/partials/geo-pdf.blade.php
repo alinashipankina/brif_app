@@ -6,7 +6,7 @@
     <table class="data-table">
         @if (isset($data['urls']) && count($data['urls']) > 0)
             <tr>
-                <td class="label">Сайты:</td>
+                <td class="label">Ссылки на сайты:</td>
                 <td class="value">
                     @foreach ($data['urls'] as $url)
                         <div class="break-all">{{ $url }}</div>
@@ -38,14 +38,21 @@
 
         @if (!empty($data['needs_geo_content']))
             <tr>
-                <td class="label">Необходимость в специальном контенте:</td>
+                <td class="label">Необходимость GEO-контента:</td>
                 <td class="value">{{ $data['needs_geo_content'] }}</td>
+            </tr>
+        @endif
+
+        @if (!empty($data['has_experience']))
+            <tr>
+                <td class="label">Наличие опыта:</td>
+                <td class="value">{{ $data['has_experience'] }}</td>
             </tr>
         @endif
 
         @if (!empty($data['monthly_budget']))
             <tr>
-                <td class="label">Бюджет:</td>
+                <td class="label">Ежемесячный бюджет:</td>
                 <td class="value">{{ $data['monthly_budget'] }}</td>
             </tr>
         @endif

@@ -13,7 +13,7 @@
 
         @if (isset($data['urls']) && count($data['urls']) > 0)
             <tr>
-                <td class="label">Сайты:</td>
+                <td class="label">Ссылки на сайты:</td>
                 <td class="value">
                     @foreach ($data['urls'] as $url)
                         <div class="break-all">{{ $url }}</div>
@@ -24,7 +24,7 @@
 
         @if (isset($data['social_links']) && count($data['social_links']) > 0)
             <tr>
-                <td class="label">Соцсети:</td>
+                <td class="label">Социальные сети:</td>
                 <td class="value">
                     @foreach ($data['social_links'] as $social_link)
                         <div class="break-all">{{ $social_link }}</div>
@@ -35,7 +35,7 @@
 
         @if (isset($data['problems']) && count($data['problems']) > 0)
             <tr>
-                <td class="label">Проблемы:</td>
+                <td class="label">Существующие проблемы:</td>
                 <td class="value">
                     @foreach ($data['problems'] as $problem)
                         <div class="break-all">{{ $problem }}</div>
@@ -46,14 +46,14 @@
 
         @if (!empty($data['review_platforms']))
             <tr>
-                <td class="label">Имеются отзывы:</td>
+                <td class="label">Платформы с имеющимися отзывами:</td>
                 <td class="value">{{ $data['review_platforms'] }}</td>
             </tr>
         @endif
 
         @if (!empty($data['has_positive_reviews']))
             <tr>
-                <td class="label">Наличие готовых отзывов:</td>
+                <td class="label">Наличие готовых положительных отзывов:</td>
                 <td class="value">{{ $data['has_positive_reviews'] }}</td>
             </tr>
         @endif
@@ -65,9 +65,16 @@
             </tr>
         @endif
 
+        @if (!empty($data['has_experience']))
+            <tr>
+                <td class="label">Наличие опыта:</td>
+                <td class="value">{{ $data['has_experience'] }}</td>
+            </tr>
+        @endif
+
         @if (!empty($data['monthly_budget']))
             <tr>
-                <td class="label">Бюджет:</td>
+                <td class="label">Ежемесячный бюджет:</td>
                 <td class="value">{{ $data['monthly_budget'] }}</td>
             </tr>
         @endif

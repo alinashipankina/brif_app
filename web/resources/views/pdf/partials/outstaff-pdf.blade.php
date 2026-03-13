@@ -6,7 +6,7 @@
     <table class="data-table">
         @if (isset($data['specialists']) && count($data['specialists']) > 0)
             <tr>
-                <td class="label">Специалисты:</td>
+                <td class="label">Необходимые специалисты:</td>
                 <td class="value">
                     @foreach ($data['specialists'] as $specialist)
                         <div class="break-all">{{ $specialist }}</div>
@@ -17,7 +17,7 @@
 
         @if (!empty($data['specialist_count']))
             <tr>
-                <td class="label">Количество:</td>
+                <td class="label">Количество специалистов:</td>
                 <td class="value">{{ $data['specialist_count'] }}</td>
             </tr>
         @endif
@@ -36,10 +36,17 @@
             </tr>
         @endif
 
-        @if (!empty($data['monthly_budget']))
+        @if (!empty($data['has_experience']))
             <tr>
-                <td class="label">Бюджет:</td>
-                <td class="value">{{ $data['monthly_budget'] }}</td>
+                <td class="label">Наличие опыта:</td>
+                <td class="value">{{ $data['has_experience'] }}</td>
+            </tr>
+        @endif
+
+        @if (!empty($data['project_budget']))
+            <tr>
+                <td class="label">Бюджет проекта:</td>
+                <td class="value">{{ $data['project_budget'] }}</td>
             </tr>
         @endif
     </table>

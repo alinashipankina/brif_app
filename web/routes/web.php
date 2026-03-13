@@ -15,6 +15,7 @@ use App\Livewire\Brif\Step3;
 use App\Livewire\Brif\Step4;
 use App\Livewire\Brif\Success;
 use App\Livewire\Managment\ManagmentPage;
+use App\Services\PredictionService;
 use App\Livewire\Managment\Index;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;

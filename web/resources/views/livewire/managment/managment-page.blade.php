@@ -399,8 +399,8 @@
 
             <!-- Таблица заявок -->
             <div class="bg-base-100 border border-[#E8E8E8] shadow-sm mb-6">
-                <div class="overflow-x-auto">
-                    <table class="table table-zebra w-full mb-4 table-fixed">
+                <div class="overflow-x-auto -mx-4">
+                    <table class="table table-zebra min-w-full">
                         <thead>
                             <tr class="bg-base-200">
                                 {{-- ID --}}
@@ -900,7 +900,7 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <span
-                                            class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$questionare->status]['badge'] ?? 'badge-neutral' }} text-sm whitespace-nowrap inline-block">
+                                            class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$questionare->status]['badge'] ?? 'badge-neutral' }} text-sm whitespace-nowrap inline-block rounded-md">
                                             {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$questionare->status]['label'] }}
                                         </span>
                                     </td>
@@ -941,7 +941,8 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                         </svg>
-                                                        <span class="text-xs text-[#10b981]">Скорее купит</span>
+                                                        <span class="text-xs text-[#10b981]">Скорее
+                                                            купит</span>
                                                     @else
                                                         <svg class="w-4 h-4 text-[#ef4444]" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
@@ -1051,7 +1052,8 @@
                         </div>
 
                         <div class="text-sm text-[#6B6B6B]">
-                            Показано {{ $this->questionares->firstItem() }}-{{ $this->questionares->lastItem() }}
+                            Показано
+                            {{ $this->questionares->firstItem() }}-{{ $this->questionares->lastItem() }}
                             из {{ $this->questionares->total() }} заявок
                         </div>
                     </div>
@@ -1065,79 +1067,112 @@
         <div class="fixed inset-0 bg-opacity-50 z-40" wire:click="closeDetails"></div>
 
         <!-- Панель с деталями -->
-        <div class="fixed inset-y-0 right-0 w-full md:w-1/2 lg:w-1/3 bg-base-100 shadow-2xl z-50 overflow-y-auto">
+        <div class="fixed inset-y-0 right-0 w-full md:w-1/2 lg:w-1/3 bg-base-100 shadow-2xl z-50 overflow-y-auto"
+            x-data
+            x-on:status-section-opened.window="
+        setTimeout(() => {
+            document.getElementById('status-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">
+                    <h2 class="text-xl md:text-2xl font-light text-[#1A1A1A] tracking-tight uppercase">
                         Заявка #{{ $selectedQuestionare->id }}
                     </h2>
-                    <button wire:click="closeDetails" class="btn btn-sm btn-circle btn-ghost">
+                    <button wire:click="closeDetails" class="btn btn-sm btn-ghost rounded-none">
                         ✕
                     </button>
                 </div>
 
-                <!-- Статус и кнопки действий -->
-                <div class="mb-6 space-y-4">
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-2">Статус</h3>
-                        <span
-                            class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['badge'] }} text-sm py-3 px-4">
-                            {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
-                        </span>
-                    </div>
-
-                    @if ($selectedQuestionare->comment)
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-500 mb-2">Комментарий</h3>
-                            <p class="p-3 bg-base-200 rounded-lg text-sm">{{ $selectedQuestionare->comment }}</p>
-                        </div>
-                    @endif
+                {{-- Услуга --}}
+                <div class="mb-6">
+                    <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">Услуга
+                    </h3>
+                    <p class="text-sm text-[#1A1A1A] font-normal break-words">{{ $selectedQuestionare->service_type }}
+                    </p>
                 </div>
+                <div class="mb-6">
+                    <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Статус</h3>
+                    <span
+                        class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['badge'] ?? 'badge-neutral' }} text-sm py-3 px-4 rounded-md font-normal">
+                        {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] ?? $selectedQuestionare->status }}
+                    </span>
+                </div>
+
+                @if ($selectedQuestionare->comment)
+                    <div class="mb-6">
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Последний
+                            комментарий
+                        </h3>
+                        <p class="p-3 bg-[#F5F5F5] text-sm text-[#1A1A1A] rounded-md">
+                            {{ $selectedQuestionare->comment }}</p>
+                    </div>
+                @endif
 
                 <!-- Основная информация -->
                 <div class="space-y-6">
                     <!-- Наименование -->
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-1">Наименование</h3>
-                        <p class="text-base font-semibold">{{ $selectedQuestionare->name }}</p>
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">ФИО, компания</h3>
+                        <p class="text-sm text-[#1A1A1A] font-normal break-words">{{ $selectedQuestionare->name }}</p>
+                    </div>
+
+                    <!-- Должность -->
+                    <div>
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">Должность</h3>
+                        <p class="text-sm text-[#1A1A1A] font-normal break-words">{{ $selectedQuestionare->role }}</p>
                     </div>
 
                     {{-- Номер телефона --}}
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-1">Номер телефона</h3>
-                        <p class="text-base font-semibold">{{ $selectedQuestionare->phone }}</p>
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">Номер телефона
+                        </h3>
+                        <p class="text-sm text-[#1A1A1A] font-normal break-words">{{ $selectedQuestionare->phone }}
+                        </p>
                     </div>
 
                     {{-- Электронная почта --}}
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-1">Электронная почта</h3>
-                        <p class="text-base font-semibold">{{ $selectedQuestionare->email }}</p>
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">Электронная почта
+                        </h3>
+                        <p class="text-sm text-[#1A1A1A] font-normal break-words">{{ $selectedQuestionare->email }}
+                        </p>
+                    </div>
+
+                    <!-- Дата создания -->
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">Дата
+                                создания</h3>
+                            <p class="text-sm text-[#1A1A1A] font-normal">
+                                {{ $selectedQuestionare->created_at->format('d.m.Y H:i') }}
+                            </p>
+                        </div>
                     </div>
 
                     {{-- Ответственный --}}
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500 mb-2">Ответственный менеджер</h3>
+                        <h3 class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Ответственный
+                            менеджер</h3>
                         @if ($selectedQuestionare->user)
-                            <div class="flex items-center p-3 bg-base-200 rounded-lg">
+                            <div class="flex items-center p-3 bg-[#F5F5F5] rounded-md">
                                 <div class="avatar mr-3">
-                                    <div class="w-12 rounded-full">
-                                        <img
-                                            src="https://ui-avatars.com/api/?name={{ urlencode($selectedQuestionare->user->name) }}&background=4f46e5&color=fff" />
+                                    <div class="w-10 h-10 bg-[#E8E8E8] flex items-center justify-center rounded-none">
+                                        <span
+                                            class="text-sm font-medium text-[#1A1A1A]">{{ substr($selectedQuestionare->user->name, 0, 1) }}</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-medium">{{ $selectedQuestionare->user->name }}</p>
-                                    <p class="text-sm text-gray-500">{{ $selectedQuestionare->user->email }}
-                                    </p>
+                                    <p class="text-sm font-medium text-[#1A1A1A]">
+                                        {{ $selectedQuestionare->user->name }}</p>
+                                    <p class="text-xs text-[#6B6B6B]">{{ $selectedQuestionare->user->email }}</p>
                                 </div>
                             </div>
                         @else
-                            <div class="alert alert-warning mb-3">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none"
+                            <div class="p-3 bg-[#F5F5F5] border border-[#E8E8E8] rounded-md">
+                                <div class="flex items-center text-sm text-[#6B6B6B]">
+                                    <svg class="w-4 h-4 mr-2 text-[#6B6B6B]" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                     </svg>
                                     <span>Ответственный не назначен</span>
@@ -1145,74 +1180,85 @@
                             </div>
                         @endif
 
-                        <!-- Детали -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-500 mb-1">Дата создания</h3>
-                                <p class="text-base font-semibold">
-                                    {{ $selectedQuestionare->created_at->format('d.m.Y H:i') }}
-                                </p>
-                            </div>
-                        </div>
-
                         <!-- Дополнительные поля -->
                         @if ($selectedQuestionare->fields() && $selectedQuestionare->fields()->count() > 0)
                             <div class="mt-6">
-                                <h3 class="text-lg font-semibold mb-3">Дополнительная информация</h3>
+                                <h3
+                                    class="text-sm md:text-base font-medium text-[#1A1A1A] uppercase tracking-wider mb-3">
+                                    Дополнительная информация
+                                </h3>
                                 <div class="space-y-3">
                                     @foreach ($selectedQuestionare->fields as $field)
-                                        <div class="collapse collapse-arrow border border-base-300">
+                                        @php
+                                            // Пропускаем поля с прогнозом
+                                            $skipFields = [
+                                                'day_of_week',
+                                                'time_of_day',
+                                                'form_completion_time',
+                                                'segments_count',
+                                            ];
+                                            if (in_array($field->field_name, $skipFields)) {
+                                                continue;
+                                            }
+                                        @endphp
+
+                                        <div class="collapse collapse-arrow border border-[#E8E8E8] rounded-md">
                                             <input type="checkbox" class="peer" />
 
-                                            <div class="collapse-title font-medium flex items-center justify-between">
-                                                <div class="flex items-center gap-3">
-                                                    <svg class="w-5 h-5 {{ \App\Helpers\QuestionareStatus::getIconColor($field->field_name) }}"
+                                            <div
+                                                class="collapse-title font-medium text-sm text-[#1A1A1A] flex items-center px-4 py-3 min-h-0">
+                                                <div class="flex items-center gap-3 flex-1">
+                                                    <svg class="w-5 h-5 {{ \App\Helpers\QuestionareStatus::getIconColor($field->field_name) }} flex-shrink-0"
                                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
+                                                            stroke-width="1.5"
                                                             d="{{ \App\Helpers\QuestionareStatus::getIcon($field->field_name) }}" />
                                                     </svg>
-                                                    <span>{{ \App\Helpers\QuestionareStatus::getTitle($field->field_name) }}</span>
+                                                    <span
+                                                        class="truncate">{{ \App\Helpers\QuestionareStatus::getTitle($field->field_name) }}</span>
                                                 </div>
 
-                                                @php
-                                                    // Для concurents считаем количество конкурентов
-                                                    if (
-                                                        $field->field_name === 'concurents' &&
-                                                        is_array($field->field_value)
-                                                    ) {
-                                                        $count = count($field->field_value);
-                                                    } elseif (is_array($field->field_value)) {
-                                                        $count = count($field->field_value);
-                                                    } else {
-                                                        $count = null;
-                                                    }
-                                                @endphp
+                                                <div class="flex items-center gap-2">
+                                                    @php
+                                                        if (
+                                                            $field->field_name === 'concurents' &&
+                                                            is_array($field->field_value)
+                                                        ) {
+                                                            $count = count($field->field_value);
+                                                        } elseif (is_array($field->field_value)) {
+                                                            $count = count($field->field_value);
+                                                        } else {
+                                                            $count = null;
+                                                        }
+                                                    @endphp
 
-                                                @if ($count)
-                                                    <span
-                                                        class="badge badge-sm badge-neutral">{{ $count }}</span>
-                                                @endif
+                                                    @if ($count)
+                                                        <span
+                                                            class="badge badge-sm badge-neutral rounded-none text-xs ml-2">{{ $count }}</span>
+                                                    @endif
+                                                    <div class="w-4"></div>
+                                                </div>
                                             </div>
 
-                                            <div class="collapse-content">
-                                                <div class="space-y-2">
+                                            <div class="collapse-content border-t border-[#E8E8E8]">
+                                                <div class="space-y-2 pt-4">
                                                     @if (is_array($field->field_value))
-                                                        {{-- Для concurents: массив конкурентов --}}
                                                         @if ($field->field_name === 'concurents')
+                                                            {{-- Конкуренты --}}
                                                             @foreach ($field->field_value as $index => $competitor)
-                                                                @if (is_array($competitor) && !empty($competitor['name']))
-                                                                    <div class="p-4 rounded-lg border mb-3 last:mb-0">
+                                                                @if (is_array($competitor) && (!empty($competitor['name']) || !empty($competitor['url'])))
+                                                                    <div
+                                                                        class="p-4 border border-[#E8E8E8] mb-3 last:mb-0 rounded-md {{ $loop->first ? 'mt-0' : '' }}">
                                                                         <div class="space-y-3">
                                                                             @if (!empty($competitor['name']))
                                                                                 <div>
                                                                                     <p
-                                                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                                                                        class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">
                                                                                         Название конкурента
                                                                                         {{ $index + 1 }}
                                                                                     </p>
                                                                                     <p
-                                                                                        class="font-medium text-sm text-gray-900 mt-1">
+                                                                                        class="text-sm text-[#1A1A1A] break-words">
                                                                                         {{ $competitor['name'] }}
                                                                                     </p>
                                                                                 </div>
@@ -1221,26 +1267,26 @@
                                                                             @if (!empty($competitor['url']))
                                                                                 <div>
                                                                                     <p
-                                                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                                                                        class="text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-1">
                                                                                         Сайт
                                                                                     </p>
                                                                                     <p
-                                                                                        class="text-sm text-gray-700 mt-1">
+                                                                                        class="text-sm text-[#1A1A1A] break-words">
                                                                                         @if (filter_var($competitor['url'], FILTER_VALIDATE_URL))
                                                                                             <a href="{{ $competitor['url'] }}"
                                                                                                 target="_blank"
-                                                                                                class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                                <svg class="w-4 h-4"
+                                                                                                class="text-sm text-[#1A1A1A] hover:text-[#4A4A4A] underline underline-offset-2 flex items-center gap-1 break-all">
+                                                                                                <svg class="w-4 h-4 flex-shrink-0"
                                                                                                     fill="none"
                                                                                                     stroke="currentColor"
                                                                                                     viewBox="0 0 24 24">
                                                                                                     <path
                                                                                                         stroke-linecap="round"
                                                                                                         stroke-linejoin="round"
-                                                                                                        stroke-width="2"
+                                                                                                        stroke-width="1.5"
                                                                                                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                                                                 </svg>
-                                                                                                {{ $competitor['url'] }}
+                                                                                                <span>{{ $competitor['url'] }}</span>
                                                                                             </a>
                                                                                         @else
                                                                                             {{ $competitor['url'] }}
@@ -1252,100 +1298,115 @@
                                                                     </div>
                                                                 @endif
                                                             @endforeach
-
-                                                            @if (count($field->field_value) === 0 ||
-                                                                    (count($field->field_value) === 1 &&
-                                                                        empty($field->field_value[0]['name']) &&
-                                                                        empty($field->field_value[0]['url'])))
-                                                                <div class="p-3 text-gray-500 text-sm italic">
-                                                                    Конкуренты не указаны
-                                                                </div>
-                                                            @endif
-                                                        @elseif ($field->field_name === 'urls')
+                                                        @elseif ($field->field_name === 'urls' || $field->field_name === 'social_links')
+                                                            {{-- Ссылки --}}
                                                             @foreach ($field->field_value as $url)
-                                                                <div class="p-3 rounded-lg border">
-                                                                    @if (is_array($url))
-                                                                        @foreach ($url as $item)
-                                                                            @if (filter_var($item, FILTER_VALIDATE_URL))
-                                                                                <a href="{{ $item }}"
-                                                                                    target="_blank"
-                                                                                    class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2 mb-2 last:mb-0">
-                                                                                    <svg class="w-5 h-5"
-                                                                                        fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        viewBox="0 0 24 24">
-                                                                                        <path stroke-linecap="round"
-                                                                                            stroke-linejoin="round"
-                                                                                            stroke-width="2"
-                                                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                    </svg>
-                                                                                    <span
-                                                                                        class="break-all">{{ $item }}</span>
-                                                                                </a>
-                                                                            @else
-                                                                                <p class="text-sm text-gray-900">
-                                                                                    {{ $item }}</p>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    @elseif (filter_var($url, FILTER_VALIDATE_URL))
-                                                                        <a href="{{ $url }}" target="_blank"
-                                                                            class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
-                                                                            <svg class="w-5 h-5" fill="none"
-                                                                                stroke="currentColor"
-                                                                                viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round"
-                                                                                    stroke-linejoin="round"
-                                                                                    stroke-width="2"
-                                                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                            </svg>
-                                                                            <span
-                                                                                class="break-all">{{ $url }}</span>
-                                                                        </a>
-                                                                    @else
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $url }}</p>
-                                                                    @endif
-                                                                </div>
+                                                                @if (!empty($url))
+                                                                    <div
+                                                                        class="p-3 border border-[#E8E8E8] rounded-md {{ $loop->first ? 'mt-0' : '' }}">
+                                                                        @if (is_array($url))
+                                                                            @foreach ($url as $item)
+                                                                                @if (!empty($item))
+                                                                                    @if (filter_var($item, FILTER_VALIDATE_URL))
+                                                                                        <a href="{{ $item }}"
+                                                                                            target="_blank"
+                                                                                            class="text-sm text-[#1A1A1A] hover:text-[#4A4A4A] underline underline-offset-2 flex items-center gap-2 mb-2 last:mb-0 break-all">
+                                                                                            <svg class="w-4 h-4 flex-shrink-0"
+                                                                                                fill="none"
+                                                                                                stroke="currentColor"
+                                                                                                viewBox="0 0 24 24">
+                                                                                                <path
+                                                                                                    stroke-linecap="round"
+                                                                                                    stroke-linejoin="round"
+                                                                                                    stroke-width="1.5"
+                                                                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                            </svg>
+                                                                                            <span>{{ $item }}</span>
+                                                                                        </a>
+                                                                                    @else
+                                                                                        <p
+                                                                                            class="text-sm text-[#1A1A1A] break-words">
+                                                                                            {{ $item }}
+                                                                                        </p>
+                                                                                    @endif
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @elseif (filter_var($url, FILTER_VALIDATE_URL))
+                                                                            <a href="{{ $url }}"
+                                                                                target="_blank"
+                                                                                class="text-sm text-[#1A1A1A] hover:text-[#4A4A4A] underline underline-offset-2 flex items-center gap-2 break-all">
+                                                                                <svg class="w-4 h-4 flex-shrink-0"
+                                                                                    fill="none"
+                                                                                    stroke="currentColor"
+                                                                                    viewBox="0 0 24 24">
+                                                                                    <path stroke-linecap="round"
+                                                                                        stroke-linejoin="round"
+                                                                                        stroke-width="1.5"
+                                                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                </svg>
+                                                                                <span>{{ $url }}</span>
+                                                                            </a>
+                                                                        @else
+                                                                            <p
+                                                                                class="text-sm text-[#1A1A1A] break-words">
+                                                                                {{ $url }}
+                                                                            </p>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
                                                             @endforeach
                                                         @else
                                                             {{-- Для других массивов --}}
                                                             @foreach ($field->field_value as $value)
-                                                                <div class="p-3 rounded-lg border">
-                                                                    @if (is_array($value))
-                                                                        <div class="flex flex-wrap gap-1">
-                                                                            @foreach ($value as $item)
-                                                                                <span
-                                                                                    class="badge badge-outline">{{ $item }}</span>
-                                                                            @endforeach
-                                                                        </div>
-                                                                    @else
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $value }}</p>
-                                                                    @endif
-                                                                </div>
+                                                                @if (!empty($value))
+                                                                    <div
+                                                                        class="p-3 border border-[#E8E8E8] rounded-md {{ $loop->first ? 'mt-0' : '' }}">
+                                                                        @if (is_array($value))
+                                                                            <div class="flex flex-wrap gap-1">
+                                                                                @foreach ($value as $item)
+                                                                                    @if (!empty($item))
+                                                                                        <span
+                                                                                            class="px-2 py-1 text-xs bg-[#F5F5F5] text-[#1A1A1A] border border-[#E8E8E8] rounded-none">{{ $item }}</span>
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </div>
+                                                                        @else
+                                                                            <p
+                                                                                class="text-sm text-[#1A1A1A] break-words">
+                                                                                {{ $value }}
+                                                                            </p>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
                                                             @endforeach
                                                         @endif
                                                     @else
                                                         {{-- Для не-массивов --}}
-                                                        <div class="p-3 rounded-lg border">
-                                                            @if ($field->field_name === 'urls' && filter_var($field->field_value, FILTER_VALIDATE_URL))
-                                                                <a href="{{ $field->field_value }}" target="_blank"
-                                                                    class="text-sm font-normal text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
-                                                                    <svg class="w-5 h-5" fill="none"
-                                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                    </svg>
-                                                                    <span
-                                                                        class="break-all">{{ $field->field_value }}</span>
-                                                                </a>
-                                                            @else
-                                                                <p class="text-sm text-gray-900">
-                                                                    {{ $field->field_value }}
-                                                                </p>
-                                                            @endif
-                                                        </div>
+                                                        @if (!empty($field->field_value))
+                                                            <div class="p-3 border border-[#E8E8E8] rounded-md">
+                                                                @if (
+                                                                    ($field->field_name === 'urls' || $field->field_name === 'social_links') &&
+                                                                        filter_var($field->field_value, FILTER_VALIDATE_URL))
+                                                                    <a href="{{ $field->field_value }}"
+                                                                        target="_blank"
+                                                                        class="text-sm text-[#1A1A1A] hover:text-[#4A4A4A] underline underline-offset-2 flex items-center gap-2 break-all">
+                                                                        <svg class="w-4 h-4 flex-shrink-0"
+                                                                            fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                stroke-width="1.5"
+                                                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                        </svg>
+                                                                        <span>{{ $field->field_value }}</span>
+                                                                    </a>
+                                                                @else
+                                                                    <p class="text-sm text-[#1A1A1A] break-words">
+                                                                        {{ $field->field_value }}
+                                                                    </p>
+                                                                @endif
+                                                            </div>
+                                                        @endif
                                                     @endif
                                                 </div>
                                             </div>
@@ -1357,58 +1418,99 @@
                     </div>
 
                     <!-- Кнопки внизу панели -->
-                    <div class="mt-8 pt-6 border-t border-gray-200 flex-col">
+                    <div class="mt-8 pt-6 border-t border-[#E8E8E8] flex-col" id="status-section">
                         <details class="mb-3">
-                            <summary class="cursor-pointer font-medium text-sm text-gray-700 mb-2">
+                            <summary
+                                class="cursor-pointer text-xs font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">
                                 История статусов ({{ $selectedQuestionare->statusHistory->count() }})
                             </summary>
-                            <div class="mt-2 space-y-3 max-h-60 overflow-y-auto p-3 bg-base-100 rounded">
+                            <div
+                                class="mt-2 space-y-3 max-h-60 overflow-y-auto p-3 bg-[#F5F5F5] border border-[#E8E8E8] rounded-none">
                                 @forelse ($selectedQuestionare->statusHistory as $statusHistory)
-                                    <div class="chat chat-start w-full">
-                                        <div class="chat-bubble bg-base-300 text-gray-800">
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-medium">
-                                                    {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$selectedQuestionare->status]['label'] }}
-                                                </span>
-                                                <span class="text-xs opacity-75">
-                                                    {{ $statusHistory->created_at->format('d.m.Y H:i') }}
-                                                </span>
-                                            </div>
-                                            @if ($statusHistory->comment)
-                                                <div class="mt-1 text-sm">{{ $statusHistory->comment }}</div>
-                                            @endif
+                                    <div class="p-3 bg-white border border-[#E8E8E8] rounded-md">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-xs font-medium text-[#1A1A1A]">
+                                                {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$statusHistory->status]['label'] ?? $statusHistory->status }}
+                                            </span>
+                                            <span class="text-[10px] text-[#6B6B6B]">
+                                                {{ $statusHistory->created_at->format('d.m.Y H:i') }}
+                                            </span>
                                         </div>
+                                        @if ($statusHistory->comment)
+                                            <p class="text-xs text-[#6B6B6B]">{{ $statusHistory->comment }}</p>
+                                        @endif
                                     </div>
                                 @empty
-                                    <div class="text-gray-400 text-sm italic">Нет истории статусов</div>
+                                    <div class="text-xs text-[#9A9A9A] italic">Нет истории статусов</div>
                                 @endforelse
                             </div>
                         </details>
 
-                        @if ($this->canEditStatus($selectedQuestionare))
-                            <div class="flex flex-col justify-between gap-5 w-full">
-                                <button type="button" wire:click='setShowSetStatus()'
-                                    class="btn btn-outline w-full">Изменить
-                                    статус</button>
-                                @if ($showSetStatus)
-                                    <select class="select select-bordered w-full" wire:model='selectedStatus'>
-                                        <option value="">Выберите статус</option>
-                                        @foreach (\App\Helpers\QuestionareStatus::$questionaresLabels as $status => $label)
-                                            <option value="{{ $status }}" class="py-2">
-                                                {{ $label['label'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <textarea class="textarea w-full" wire:model='selectedComment' type="text" placeholder="Комментарий"></textarea>
+                        <!-- Кнопка скачивания PDF -->
+                        <div class="mb-4">
+                            <button wire:click="downloadBrifPdf({{ $selectedQuestionare->id }})"
+                                class="btn w-full h-10 text-xs font-medium bg-white border border-[#D0D0D0] text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors duration-200 rounded-none uppercase tracking-wider flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Скачать бриф (PDF)
+                            </button>
+                        </div>
 
-                                    <button wire:click='changeStatus()' type="button"
-                                        class="btn btn-accent">Сохранить</button>
+                        @if ($this->canEditStatus($selectedQuestionare))
+                            <div class="flex flex-col justify-between gap-3 w-full">
+                                @if (!$showSetStatus)
+                                    <button type="button" wire:click='setShowSetStatus'
+                                        class="btn w-full h-10 text-xs font-medium bg-white border border-[#D0D0D0] text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors duration-200 rounded-none uppercase tracking-wider">
+                                        Изменить статус
+                                    </button>
+                                @endif
+
+                                @if ($showSetStatus)
+                                    <div class="space-y-3">
+                                        <select class="select w-full h-10 border border-[#D0D0D0] rounded-none text-sm"
+                                            wire:model='selectedStatus'>
+                                            <option value="" class="text-[#9A9A9A]">Выберите статус</option>
+                                            @foreach (\App\Helpers\QuestionareStatus::$questionaresLabels as $status => $label)
+                                                <option value="{{ $status }}" class="text-[#1A1A1A]">
+                                                    {{ $label['label'] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <textarea class="textarea w-full border border-[#D0D0D0] rounded-none text-sm p-3" wire:model='selectedComment'
+                                            placeholder="Комментарий (обязательно)" rows="3"></textarea>
+
+                                        <!-- Блок с ошибкой, если комментарий пустой -->
+                                        @error('selectedComment')
+                                            <p class="text-xs text-[#8B0000] mt-1">{{ $message }}</p>
+                                        @enderror
+
+                                        @error('selectedStatus')
+                                            <p class="text-xs text-[#8B0000] mt-1">{{ $message }}</p>
+                                        @enderror
+
+                                        <div class="flex gap-2">
+                                            <button wire:click='changeStatus' type="button"
+                                                class="btn flex-1 h-10 text-xs font-medium bg-[#1A1A1A] hover:bg-[#2A2A2A] text-white border-0 transition-colors duration-200 rounded-none uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                                                wire:disabled="{{ $this->isSaveDisabled }}">
+                                                Сохранить
+                                            </button>
+
+                                            <button wire:click='cancelStatusChange' type="button"
+                                                class="btn flex-1 h-10 text-xs font-medium bg-white border border-[#D0D0D0] text-[#6B6B6B] hover:bg-[#F5F5F5] hover:text-[#1A1A1A] transition-colors duration-200 rounded-none uppercase tracking-wider">
+                                                Отменить
+                                            </button>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
+        </div>
     @endif
 </div>
 

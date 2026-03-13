@@ -14,7 +14,9 @@ class Questionare extends Model
 
     protected $fillable = [
         'name', 'role', 'phone', 'email',
-        'service_type', 'user_id', 'status'
+        'service_type', 'user_id', 'status', 'comment',
+        'prediction_probability', 'prediction_will_buy',
+        'prediction_confidence', 'prediction_raw', 'predicted_at'
     ];
 
     protected $attributes = [
@@ -23,6 +25,9 @@ class Questionare extends Model
 
     protected $casts = [
         'user_id' => 'integer',
+        'prediction_probability' => 'float',
+        'prediction_will_buy' => 'boolean',
+        'predicted_at' => 'datetime',
     ];
 
     public function user(): BelongsTo {
@@ -50,7 +55,11 @@ class Questionare extends Model
             'service_type' => 'string',
             'user_id' => 'integer',
             'status' => 'string',
-            'comment' => 'string'
+            'comment' => 'string',
+            'prediction_probability' => 'float',
+            'prediction_will_buy' => 'boolean',
+            'prediction_confidence' => 'string',
+            'predicted_at' => 'datetime',
         ];
     }
 }

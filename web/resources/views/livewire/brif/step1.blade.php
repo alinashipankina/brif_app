@@ -1,7 +1,10 @@
 <div
     class="card w-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 rounded-none border border-[#E8E8E8]">
     <div class="card-body p-6 md:p-10">
-        @include('livewire.brif.partials.logo-summary')
+        @include('livewire.brif.partials.logo-summary', [
+            'stepNumber' => $stepNumber,
+            'totalSteps' => $totalSteps,
+        ])
 
         <form wire:submit.prevent='save' class="space-y-5 md:space-y-7" wire:ignore.self>
             <div class="form-control">

@@ -11,7 +11,11 @@ class PredictionService
 
     public function __construct()
     {
-        $this->apiUrl = env('ML_API_URL', 'http://localhost:5000');
+        $this->apiUrl = env('ML_API_URL', 'http://localhost:5001');
+        Log::info('PredictionService initialized', [
+            'apiUrl' => $this->apiUrl,
+            'env_ml_url' => env('ML_API_URL')
+        ]);
     }
 
     public function predict(array $leadData)

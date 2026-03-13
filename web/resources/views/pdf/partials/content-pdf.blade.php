@@ -6,7 +6,7 @@
     <table class="data-table">
         @if (isset($data['urls']) && count($data['urls']) > 0)
             <tr>
-                <td class="label">Сайты для аналитики:</td>
+                <td class="label">Ссылки на сайты:</td>
                 <td class="value">
                     @foreach ($data['urls'] as $url)
                         <div class="break-all">{{ $url }}</div>
@@ -24,7 +24,7 @@
 
         @if (isset($data['content_types']) && count($data['content_types']) > 0)
             <tr>
-                <td class="label">Тип контента:</td>
+                <td class="label">Типы контента:</td>
                 <td class="value">
                     @foreach ($data['content_types'] as $content_type)
                         <div class="break-all">{{ $content_type }}</div>
@@ -47,16 +47,23 @@
             </tr>
         @endif
 
-        @if (!empty($data['has_content_plan']))
+        @if (!empty($data['needs_publishing']))
             <tr>
-                <td class="label">Необходимость публикации на сайте:</td>
-                <td class="value">{{ $data['has_content_plan'] }}</td>
+                <td class="label">Необходимость публикации:</td>
+                <td class="value">{{ $data['needs_publishing'] }}</td>
+            </tr>
+        @endif
+
+        @if (!empty($data['has_experience']))
+            <tr>
+                <td class="label">Наличие опыта:</td>
+                <td class="value">{{ $data['has_experience'] }}</td>
             </tr>
         @endif
 
         @if (!empty($data['monthly_budget']))
             <tr>
-                <td class="label">Бюджет:</td>
+                <td class="label">Ежемесячный бюджет:</td>
                 <td class="value">{{ $data['monthly_budget'] }}</td>
             </tr>
         @endif

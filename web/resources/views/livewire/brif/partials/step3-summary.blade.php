@@ -1,10 +1,70 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-3 md:gap-y-4">
-    <div>
-        <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Продукция для
-            продвижения:</span>
-        <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
-            {{ $data['production'] ?? '' }}</p>
-    </div>
+    @if (!in_array($serviceType, ['Аутстафф']))
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Продукция для
+                продвижения:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['production'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Основные
+                конкуренты:</span>
+            <div class="space-y-1 md:space-y-1.5 mt-0.5 md:mt-1">
+                @foreach ($data['concurents'] ?? [] as $concurent)
+                    <div class="flex items-center gap-1.5 md:gap-2">
+                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#6B6B6B]" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z">
+                            </path>
+                        </svg>
+                        <span
+                            class="text-xs md:text-sm text-[#1A1A1A] break-words">{{ $concurent['name'] ?? '' }}</span>
+                        <a href="{{ $concurent['url'] ?? '#' }}"
+                            class="text-[10px] md:text-xs text-[#6B6B6B] hover:text-[#1A1A1A] underline underline-offset-2"
+                            target="_blank">(сайт)</a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    @if ($serviceType === 'Аутстафф')
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Описание задач и
+                требований:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['tasks_description'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Уровень специалистов:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['specialist_level'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Технологический стек:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['tech_stack'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Наличие ТЗ и
+                документации:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['has_tz'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Интеграция с командой:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['team_integration'] ?? '' }}</p>
+        </div>
+        <div>
+            <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Дополнительная
+                информация:</span>
+            <p class="text-xs md:text-sm text-[#1A1A1A] mt-0.5 md:mt-1 font-normal break-words">
+                {{ $data['additional_info'] ?? '' }}</p>
+        </div>
+    @endif
+
     <div>
         <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Сегмент
             потребителей:</span>
@@ -14,26 +74,6 @@
                     class="px-2 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs bg-[#F5F5F5] text-[#1A1A1A] border border-[#E8E8E8]">
                     {{ $segment }}
                 </span>
-            @endforeach
-        </div>
-    </div>
-    <div>
-        <span class="text-[10px] md:text-xs text-[#6B6B6B] uppercase tracking-wider">Основные
-            конкуренты:</span>
-        <div class="space-y-1 md:space-y-1.5 mt-0.5 md:mt-1">
-            @foreach ($data['concurents'] ?? [] as $concurent)
-                <div class="flex items-center gap-1.5 md:gap-2">
-                    <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-[#6B6B6B]" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z">
-                        </path>
-                    </svg>
-                    <span class="text-xs md:text-sm text-[#1A1A1A] break-words">{{ $concurent['name'] ?? '' }}</span>
-                    <a href="{{ $concurent['url'] ?? '#' }}"
-                        class="text-[10px] md:text-xs text-[#6B6B6B] hover:text-[#1A1A1A] underline underline-offset-2"
-                        target="_blank">(сайт)</a>
-                </div>
             @endforeach
         </div>
     </div>

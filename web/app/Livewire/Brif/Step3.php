@@ -16,12 +16,15 @@ class Step3 extends Component
 
     public function mount()
     {
+        StepHelper::setStepNumber(3);
+
         $this->resetErrorBag();
         $this->resetValidation();
 
+        Session::put('current_step', 3);
+
         $step1Data = Session::get(SessionConstants::STEP1_FORM, []);
         $this->serviceType = $step1Data['service_type'] ?? '';
-
 
         FormHelper::fillFormFromSession(SessionConstants::STEP3_FORM, $this->form);
 
@@ -32,11 +35,35 @@ class Step3 extends Component
 
     public function save()
     {
-        $this->validate([
+        Session::put('current_step', 3);
+
+        if ($this->serviceType === 'Аутстафф') {
+            $this->validate([
+                'form.tasks_description' => 'required|min:10',
+                'form.specialist_level' => 'required',
+                'form.tech_stack' => 'required',
+                'form.has_tz' => 'required',
+                'form.team_integration' => 'required',
+                'form.additional_info' => 'nullable|string',
+                'form.segments' => 'required|array|min:1',
+                'form.marketing' => 'nullable|string',
+            ], [
+                'form.tasks_description.required' => 'Опишите задачи и требования',
+                'form.tasks_description.min' => 'Минимум 10 символов',
+                'form.specialist_level.required' => 'Выберите требуемый уровень специалистов',
+                'form.tech_stack.required' => 'Укажите необходимый технологический стек',
+                'form.has_tz.required' => 'Укажите наличие технического задания',
+                'form.team_integration.required' => 'Выберите формат интеграции с командой',
+                'form.segments.required' => 'Выберите хотя бы один сегмент потребителей',
+                'form.segments.array' => 'Выберите хотя бы один сегмент потребителей',
+                'form.segments.min' => 'Выберите хотя бы один сегмент потребителей',
+            ]);
+        } else {$this->validate([
             'form.concurents' => 'required|array|min:1',
             'form.concurents.*.name' => 'required|string|min:2',
             'form.concurents.*.url' => 'required|url',
             'form.segments' => 'required|array|min:1',
+            'form.marketing' => 'nullable|string',
         ], [
             'form.concurents.required' => 'Добавьте хотя бы одного конкурента',
             'form.concurents.min' => 'Добавьте хотя бы одного конкурента',
@@ -48,6 +75,7 @@ class Step3 extends Component
             'form.segments.array' => 'Выберите хотя бы один сегмент потребителей',
             'form.segments.min' => 'Выберите хотя бы один сегмент потребителей',
         ]);
+    }
 
         $this->saveToSession();
         return redirect("/brif/step4");
@@ -68,6 +96,27 @@ class Step3 extends Component
 
     private function saveToSession()
     {
+        $dataToSave = [
+            'segments' => $this->form->segments,
+            'marketing' => $this->form->marketing,
+        ];
+
+        if ($this->serviceType === 'Аутстафф') {
+            $dataToSave = array_merge($dataToSave, [
+                'tasks_description' => $this->form->tasks_description,
+                'specialist_level' => $this->form->specialist_level,
+                'tech_stack' => $this->form->tech_stack,
+                'has_tz' => $this->form->has_tz,
+                'team_integration' => $this->form->team_integration,
+                'additional_info' => $this->form->additional_info,
+            ]);
+        } else {
+            $dataToSave = array_merge($dataToSave, [
+                'production' => $this->form->production,
+                'concurents' => $this->form->concurents,
+            ]);
+        }
+
         session([SessionConstants::STEP3_FORM => $this->form->all()]);
     }
 
@@ -98,6 +147,7 @@ class Step3 extends Component
     public function render()
     {
             return view('livewire.brif.step3', [
+                'serviceType' => $this->serviceType,
                 'stepNumber' => StepHelper::getStepNumber(),
                 'totalSteps' => 4
             ]);

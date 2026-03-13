@@ -1,7 +1,28 @@
 <div
     class="card w-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 rounded-none border border-[#E8E8E8]">
+
+    @if (session('message'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 mx-6 mt-6">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-6 mt-6">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @php
+        if (app()->environment('local')) {
+            \Illuminate\Support\Facades\Log::info('Step4 компонент загружен');
+        }
+    @endphp
     <div class="card-body p-6 md:p-10">
-        @include('livewire.brif.partials.logo-summary')
+        @include('livewire.brif.partials.logo-summary', [
+            'stepNumber' => $stepNumber,
+            'totalSteps' => $totalSteps,
+        ])
 
         <div class="mb-6 md:mb-8 p-4 md:p-6 bg-[#F9F9F9] border border-[#E8E8E8]">
             <div class="flex items-start">

@@ -3,6 +3,7 @@
 namespace App\Livewire\Brif\Step2;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Session;
 use App\Helpers\FormHelper;
 use App\Helpers\StepHelper;
 use App\Helpers\SessionConstants;
@@ -14,8 +15,12 @@ class SeoForeign extends Component
 
     public function mount()
     {
+        StepHelper::setStepNumber(2);
+
         $this->resetErrorBag();
         $this->resetValidation();
+
+        Session::put('current_step', 2);
 
         FormHelper::fillFormFromSession(SessionConstants::SEO_FOREIGN_FORM, $this->form);
 
@@ -30,6 +35,8 @@ class SeoForeign extends Component
 
     public function save()
     {
+        Session::put('current_step', 2);
+
         $this->validate([
             'form.urls' => 'required|array|min:1',
             'form.urls.*' => 'required|url',

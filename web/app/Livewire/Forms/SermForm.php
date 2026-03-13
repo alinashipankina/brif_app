@@ -6,9 +6,9 @@ use Livewire\Form;
 
 class SermForm extends Form
 {
-    public string $company_name = "";
-
     public array $urls = [''];
+
+    public string $company_name = "";
 
     public array $social_links = [''];
 
