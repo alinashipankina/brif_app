@@ -41,7 +41,9 @@ class Questionare extends Model
     public function statusHistory(): HasMany {
         return $this->hasMany(QuestionareStatusHistory::class);
     }
-
+    public function files(): HasMany {
+        return $this->hasMany(QuestionareFile::class);
+    }
 
     protected function casts(): array
     {

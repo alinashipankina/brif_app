@@ -4,18 +4,21 @@ namespace App\Livewire\Managment;
 
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use App\Models\Questionare;
 use App\Models\User;
 use App\Models\QuestionareStatusHistory;
+use App\Models\QuestionareFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 #[Layout('components.layouts.managment')]
 class ManagmentPage extends Component
 {
-
     use WithPagination;
+    use WithFileUploads;
 
     public $search = '';
     public $statusFilter = [];
@@ -38,14 +41,55 @@ class ManagmentPage extends Component
     public $isCommentRequired = true;
     public $hasAttemptedSubmit = false;
 
-    /**
-     * Скачать PDF с брифом для выбранной заявки
-     */
+    public $uploadedFiles = [];
+    public $tempFiles = [];
+
+    public $showReassignModal = false;
+    public $selectedManagerId = null;
+
+    public function openReassignModal()
+    {
+        $this->showReassignModal = true;
+        $this->selectedManagerId = $this->selectedQuestionare->user_id;
+    }
+
+    public function reassignManager()
+    {
+        if (!Auth::user()->isAdmin()) {
+            session()->flash('error', 'Только администратор может переназначать ответственных');
+            return;
+        }
+
+        $this->validate([
+            'selectedManagerId' => 'required|exists:users,id',
+        ]);
+
+        $oldStatus = $this->selectedQuestionare->status;
+        $oldComment = $this->selectedQuestionare->comment ?? '';
+
+        $history = QuestionareStatusHistory::create([
+            "status" => $oldStatus,
+            "comment" => "Переназначение: " . ($this->selectedQuestionare->user->name ?? 'не назначен') . " → " . User::find($this->selectedManagerId)->name,
+            "questionare_id" => $this->selectedQuestionare->id
+        ]);
+
+        $this->selectedQuestionare->user_id = $this->selectedManagerId;
+        $this->selectedQuestionare->status = 'Qualified';
+        $this->selectedQuestionare->save();
+
+        // Обновляем заявку
+        $this->selectedQuestionare = Questionare::with(['files.user', 'statusHistory.files.user', 'user'])
+        ->find($this->selectedQuestionare->id);
+
+        $this->showReassignModal = false;
+        $this->dispatch('manager-reassigned');
+        session()->flash('message', 'Ответственный изменен, статус обновлен на "Квалификация"');
+    }
+
     public function downloadBrifPdf(int $id)
     {
         $questionare = Questionare::with('fields')->findOrFail($id);
 
-        // Собираем данные для PDF
         $formData = [
             'name' => $questionare->name,
             'role' => $questionare->role,
@@ -54,11 +98,9 @@ class ManagmentPage extends Component
             'service_type' => $questionare->service_type,
         ];
 
-        // Добавляем все поля из связанной таблицы
         foreach ($questionare->fields as $field) {
             $value = $field->field_value;
 
-            // Декодируем JSON, если это массив
             if ($this->isJson($value)) {
                 $value = json_decode($value, true);
             }
@@ -66,7 +108,6 @@ class ManagmentPage extends Component
             $formData[$field->field_name] = $value;
         }
 
-        // Генерируем PDF
         $pdf = Pdf::loadView('pdf.brif', ['form' => $formData]);
 
         $pdf->setOptions([
@@ -85,9 +126,6 @@ class ManagmentPage extends Component
         );
     }
 
-    /**
-     * Проверка, является ли строка JSON
-     */
     private function isJson($string)
     {
         if (!is_string($string)) {
@@ -123,20 +161,34 @@ class ManagmentPage extends Component
     }
 
     public function selectQuestionare(int $id) {
-        $this->selectedQuestionare = Questionare::find($id);
+        $questionare = Questionare::with(['files.user', 'statusHistory.files.user'])->find($id);
+
+        // Проверяем, имеет ли пользователь доступ к этой заявке
+        $user = Auth::user();
+
+        if (!$user->isAdmin()) {
+            $canAccess = is_null($questionare->user_id) || $questionare->user_id == $user->id;
+
+            if (!$canAccess) {
+                session()->flash('error', 'У вас нет доступа к этой заявке');
+                return;
+            }
+        }
+
+        $this->selectedQuestionare = $questionare;
         $this->showDetails = true;
-        $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus']);
+        $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus', 'tempFiles']);
     }
 
     public function closeDetails() {
         $this->showDetails = false;
         $this->selectedQuestionare = null;
-        $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus']);
+        $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus', 'tempFiles']);
     }
 
     public function setShowSetStatus() {
         $this->showSetStatus = true;
-        $this->reset(['selectedStatus', 'selectedComment', 'hasAttemptedSubmit']);
+        $this->reset(['selectedStatus', 'selectedComment', 'hasAttemptedSubmit', 'tempFiles']);
         $this->dispatch('status-section-opened');
     }
     public function toggleHistory() {
@@ -145,7 +197,63 @@ class ManagmentPage extends Component
 
     public function cancelStatusChange() {
         $this->showSetStatus = false;
-        $this->reset(['selectedStatus', 'selectedComment', 'hasAttemptedSubmit']);
+        $this->reset(['selectedStatus', 'selectedComment', 'hasAttemptedSubmit', 'tempFiles']);
+    }
+
+    public function updatedUploadedFiles()
+    {
+        try {
+            $this->validate([
+                'uploadedFiles.*' => 'file|max:20480|mimes:png,jpg,jpeg,gif,doc,docx,pdf,xls,xlsx,txt',
+            ]);
+
+            foreach ($this->uploadedFiles as $file) {
+            $exists = collect($this->tempFiles)->contains('name', $file->getClientOriginalName());
+
+            if (!$exists) {
+                $this->tempFiles[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'type' => $file->getMimeType(),
+                    'tmp_path' => $file->getRealPath(),
+                    'file' => $file,
+                ];
+            }
+        }
+
+        $this->uploadedFiles = [];
+        $this->dispatch('files-added');
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ошибка при загрузке файла: ' . $e->getMessage());
+        }
+    }
+
+    public function addFile()
+    {
+        $this->validate([
+            'uploadedFiles' => 'required|array|min:1',
+            'uploadedFiles.*' => 'file|max:10240',
+        ]);
+
+        foreach ($this->uploadedFiles as $file) {
+            $this->tempFiles[] = [
+                'name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'type' => $file->getMimeType(),
+                'tmp_path' => $file->getRealPath(),
+                'file' => $file,
+            ];
+        }
+
+        $this->uploadedFiles = [];
+        $this->dispatch('files-added');
+    }
+
+    public function removeTempFile($index)
+    {
+        unset($this->tempFiles[$index]);
+        $this->tempFiles = array_values($this->tempFiles);
     }
 
     public function getIsSaveDisabledProperty()
@@ -153,54 +261,130 @@ class ManagmentPage extends Component
         return !$this->selectedStatus || ($this->isCommentRequired && !$this->selectedComment);
     }
 
-    public function changeStatus() {
-        $this->validate([
+    public function changeStatus()
+    {
+        $this->hasAttemptedSubmit = true;
+
+        $rules = [
             'selectedStatus' => 'required|string',
             'selectedComment' => 'required|string|min:3',
-        ], [
+        ];
+
+        $messages = [
             'selectedStatus.required' => 'Выберите новый статус',
             'selectedComment.required' => 'Комментарий обязателен для изменения статуса',
             'selectedComment.min' => 'Комментарий должен содержать минимум 3 символа',
-        ]);
+        ];
+
+        $this->validate($rules, $messages);
 
         try {
             $oldStatus = $this->selectedQuestionare->status;
             $oldComment = $this->selectedQuestionare->comment ?? '';
 
+            // СНАЧАЛА создаем историю
             $history = QuestionareStatusHistory::create([
                 "status" => $oldStatus,
                 "comment" => $oldComment,
                 "questionare_id" => $this->selectedQuestionare->id
             ]);
 
+            // ПОТОМ сохраняем файлы, привязывая к истории
+            if (!empty($this->tempFiles)) {
+                foreach ($this->tempFiles as $tempFile) {
+                    $path = $tempFile['file']->store('questionare-files/' . $this->selectedQuestionare->id, 'public');
+
+                    QuestionareFile::create([
+                        'questionare_id' => $this->selectedQuestionare->id,
+                        'status_history_id' => $history->id, // ВАЖНО: здесь должен быть $history->id
+                        'user_id' => Auth::id(),
+                        'status' => $this->selectedStatus,
+                        'original_name' => $tempFile['name'],
+                        'file_path' => $path,
+                        'file_type' => $tempFile['type'],
+                        'file_size' => $tempFile['size'],
+                    ]);
+                }
+            }
+
+            // Обновляем заявку
             $this->selectedQuestionare->status = $this->selectedStatus;
             $this->selectedQuestionare->comment = $this->selectedComment;
             $this->selectedQuestionare->user_id = Auth::id();
             $this->selectedQuestionare->save();
 
-            $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus']);
-            $this->closeDetails();
+            // Перезагружаем с файлами
+            $this->selectedQuestionare = Questionare::with(['files', 'statusHistory.files'])->find($this->selectedQuestionare->id);
 
+            $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus', 'tempFiles']);
+            $this->dispatch('status-changed');
             session()->flash('message', 'Статус успешно изменен');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Ошибка при изменении статуса');
+            session()->flash('error', 'Ошибка при изменении статуса: ' . $e->getMessage());
         }
     }
 
+    public function downloadFile($fileId)
+    {
+        $file = QuestionareFile::findOrFail($fileId);
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            session()->flash('error', 'Файл не найден');
+            return;
+        }
+
+        return Storage::disk('public')->download($file->file_path, $file->original_name);
+    }
+
+    public function deleteFile($fileId)
+    {
+        $file = QuestionareFile::findOrFail($fileId);
+
+        if ($file->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            session()->flash('error', 'У вас нет прав на удаление этого файла');
+            return;
+        }
+
+        if (Storage::disk('public')->exists($file->file_path)) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+
+        $file->delete();
+
+        $this->selectedQuestionare = Questionare::with('files')->find($this->selectedQuestionare->id);
+
+        session()->flash('message', 'Файл удален');
+    }
+
     public function canEditStatus(Questionare $questionare) : bool {
-        if ($questionare->status == 'NewLead') {
+        $user = Auth::user();
+
+        // Админ может редактировать любые заявки
+        if ($user->isAdmin()) {
             return true;
         }
 
-        if (in_array($questionare->status, [
-            'ClosedIntoADeal',
-            'ClosedInRefusal',
-            'TransferredToPartner'
-        ])) {
-            return false;
+        // Если заявка без ответственного - можно редактировать
+        if (is_null($questionare->user_id)) {
+            return true;
         }
-        return $questionare->user_id == Auth::id();
+
+        // Если заявка с ответственным, но это текущий пользователь
+        if ($questionare->user_id == $user->id) {
+            // Нельзя редактировать закрытые заявки
+            if (in_array($questionare->status, [
+                'ClosedIntoADeal',
+                'ClosedInRefusal',
+                'TransferredToPartner'
+            ])) {
+                return false;
+            }
+            return true;
+        }
+
+        // Во всех остальных случаях - нельзя редактировать
+        return false;
     }
 
     public function applyStatusFilter()
@@ -286,6 +470,14 @@ class ManagmentPage extends Component
     public function getQuestionaresProperty()
     {
         $query = Questionare::query();
+        $user = Auth::user();
+
+        if (!$user->isAdmin()) {
+        $query->where(function($q) use ($user) {
+            $q->where('status', 'NewLead')
+            ->orWhere('user_id', $user->id);
+        });
+    }
 
         if (!empty($this->statusFilter)) {
             $query->whereIn('status', $this->statusFilter);
@@ -310,38 +502,85 @@ class ManagmentPage extends Component
 
     public function getUsersProperty()
     {
-        return User::all();
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return User::all();
+        } else {
+            return User::where('id', $user->id)->get();
+        }
     }
 
     public function getStatisticsProperty()
     {
-        return [
-            'total' => Questionare::count(),
-            'new' => Questionare::where('status', 'NewLead')->count(),
-            'in_progress' => Questionare::whereIn('status', [
-                'Qualified',
-                'SentProposal',
-                'ProposalPresented',
-                'Negotiations',
-                'ContractSigning'
-            ])->count(),
-            'completed' => Questionare::whereIn('status', [
+        $user = Auth::user();
+
+        // Базовый запрос с учетом прав доступа
+        $baseQuery = Questionare::query();
+
+        if (!$user->isAdmin()) {
+            // Менеджер видит статистику только по доступным заявкам
+            $baseQuery->where(function($q) use ($user) {
+                $q->whereNull('user_id') // Заявки без ответственного
+                ->orWhere('user_id', $user->id); // Свои заявки
+            });
+        }
+
+        // Создаем подзапросы для каждого статуса с учетом прав
+        $total = (clone $baseQuery)->count();
+
+        $byStatus = [];
+        foreach (array_keys(\App\Helpers\QuestionareStatus::$questionaresLabels) as $statusKey) {
+            $byStatus[$statusKey] = (clone $baseQuery)
+                ->where('status', $statusKey)
+                ->count();
+        }
+
+        $new = $byStatus['NewLead'] ?? 0;
+
+        $inProgress = (clone $baseQuery)
+        ->whereIn('status', [
+            'Qualified',
+            'SentProposal',
+            'ProposalPresented',
+            'Negotiations',
+            'ContractSigning'
+        ])->count();
+
+        $completed = (clone $baseQuery)
+            ->whereIn('status', [
                 'ClosedIntoADeal',
                 'ClosedInRefusal',
                 'TransferredToPartner'
-            ])->count(),
+            ])->count();
 
+        return [
+            'total' => $total,
+            'new' => $new,
+            'in_progress' => $inProgress,
+            'completed' => $completed,
+            'by_status' => $byStatus,
         ];
     }
 
+    public function getQuestionareFilesProperty()
+    {
+        if (!$this->selectedQuestionare) {
+            return collect();
+        }
+
+        return $this->selectedQuestionare->files()->orderBy('created_at', 'desc')->get();
+    }
 
     public function render()
     {
-
         return view('livewire.managment.managment-page', [
             'questionares' => $this->questionares,
             'users' => $this->users,
-            'statistics' => $this->statistics
+            'statistics' => $this->statistics,
+            'isAdmin' => Auth::user()->isAdmin(),
         ]);
     }
+
+
 }

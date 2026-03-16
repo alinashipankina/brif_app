@@ -235,13 +235,24 @@
             @include('pdf.partials.default-pdf', ['data' => $form])
     @endswitch
 
-    @if (isset($form['production']) || isset($form['concurents']) || isset($form['segments']) || isset($form['marketing']))
+    @if (
+        !empty($form['production']) ||
+            !empty($form['tasks_description']) ||
+            !empty($form['specialist_level']) ||
+            !empty($form['tech_stack']) ||
+            !empty($form['has_tz']) ||
+            !empty($form['team_integration']) ||
+            !empty($form['additional_info']) ||
+            (isset($form['concurents']) && count($form['concurents']) > 0 && $serviceType !== 'Аутстафф') ||
+            (isset($form['segments']) && count($form['segments']) > 0) ||
+            !empty($form['marketing']))
         <div class="section">
             <div class="section-header">
-                <div class="section-title">Дополнительная информация</div>
+                <div class="section-title">Детали проекта</div>
             </div>
 
             <table class="data-table">
+                {{-- Для маркетинговых услуг --}}
                 @if (!empty($form['production']))
                     <tr>
                         <td class="label">Продукция для продвижения:</td>
@@ -249,13 +260,15 @@
                     </tr>
                 @endif
 
-                @if (isset($form['concurents']) && count($form['concurents']) > 0)
+                {{-- Конкуренты (для всех, кроме аутстаффа) --}}
+                @if (isset($form['concurents']) && count($form['concurents']) > 0 && $serviceType !== 'Аутстафф')
                     <tr>
                         <td class="label">Основные конкуренты:</td>
                         <td class="value">
                             @foreach ($form['concurents'] as $concurent)
-                                <div>{{ $c['name'] ?? '' }}
-                                    @if (isset($concurent['url']))
+                                <div>
+                                    {{ $concurent['name'] ?? '' }}
+                                    @if (isset($concurent['url']) && !empty($concurent['url']))
                                         <span class="competitor-url">({{ $concurent['url'] }})</span>
                                     @endif
                                 </div>
@@ -264,6 +277,50 @@
                     </tr>
                 @endif
 
+                {{-- Для аутстаффа --}}
+                @if (!empty($form['tasks_description']))
+                    <tr>
+                        <td class="label">Описание задач:</td>
+                        <td class="value">{{ $form['tasks_description'] }}</td>
+                    </tr>
+                @endif
+
+                @if (!empty($form['specialist_level']))
+                    <tr>
+                        <td class="label">Уровень специалистов:</td>
+                        <td class="value">{{ $form['specialist_level'] }}</td>
+                    </tr>
+                @endif
+
+                @if (!empty($form['tech_stack']))
+                    <tr>
+                        <td class="label">Технологический стек:</td>
+                        <td class="value">{{ $form['tech_stack'] }}</td>
+                    </tr>
+                @endif
+
+                @if (!empty($form['has_tz']))
+                    <tr>
+                        <td class="label">Наличие ТЗ:</td>
+                        <td class="value">{{ $form['has_tz'] }}</td>
+                    </tr>
+                @endif
+
+                @if (!empty($form['team_integration']))
+                    <tr>
+                        <td class="label">Интеграция с командой:</td>
+                        <td class="value">{{ $form['team_integration'] }}</td>
+                    </tr>
+                @endif
+
+                @if (!empty($form['additional_info']))
+                    <tr>
+                        <td class="label">Дополнительная информация:</td>
+                        <td class="value">{{ $form['additional_info'] }}</td>
+                    </tr>
+                @endif
+
+                {{-- Общие поля для всех --}}
                 @if (isset($form['segments']) && count($form['segments']) > 0)
                     <tr>
                         <td class="label">Сегменты потребителей:</td>
@@ -279,7 +336,7 @@
 
                 @if (!empty($form['marketing']))
                     <tr>
-                        <td class="label">Откуда узнали:</td>
+                        <td class="label">Откуда узнали о нас:</td>
                         <td class="value">{{ $form['marketing'] }}</td>
                     </tr>
                 @endif

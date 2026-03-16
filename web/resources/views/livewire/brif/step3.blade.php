@@ -108,9 +108,7 @@
                 </div>
             @endif
 
-            {{-- БЛОК ДЛЯ АУТСТАФФА --}}
             @if ($serviceType === 'Аутстафф')
-                {{-- Описание задач и требований --}}
                 <div class="form-control">
                     <label class="label mb-1.5 md:mb-2">
                         <span
@@ -131,8 +129,6 @@
                     @enderror
                 </div>
 
-
-                {{-- Уровень специалистов --}}
                 <div class="form-control">
                     <label class="label mb-1.5 md:mb-2">
                         <span class="label-text font-medium text-[#1A1A1A] text-xs md:text-sm uppercase tracking-wider">

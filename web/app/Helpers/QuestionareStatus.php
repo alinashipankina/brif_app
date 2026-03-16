@@ -96,7 +96,7 @@ class QuestionareStatus {
 
     public static function getFieldConfigs() {
         return [
-            // Общие поля
+            // SEO
             'urls' => [
                 'title' => 'Ссылки на сайты',
                 'icon' => 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
@@ -255,6 +255,42 @@ class QuestionareStatus {
                 'title' => 'Бюджет проекта',
                 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
                 'icon_color' => 'emerald',
+                'is_link' => false,
+            ],
+            'tasks_description' => [
+                'title' => 'Описание задач',
+                'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                'icon_color' => 'blue',
+                'is_link' => false,
+            ],
+            'specialist_level' => [
+                'title' => 'Уровень специалистов',
+                'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
+                'icon_color' => 'purple',
+                'is_link' => false,
+            ],
+            'tech_stack' => [
+                'title' => 'Технологический стек',
+                'icon' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
+                'icon_color' => 'green',
+                'is_link' => false,
+            ],
+            'has_tz' => [
+                'title' => 'Наличие ТЗ',
+                'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                'icon_color' => 'amber',
+                'is_link' => false,
+            ],
+            'team_integration' => [
+                'title' => 'Интеграция с командой',
+                'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+                'icon_color' => 'indigo',
+                'is_link' => false,
+            ],
+            'additional_info' => [
+                'title' => 'Дополнительная информация',
+                'icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                'icon_color' => 'gray',
                 'is_link' => false,
             ],
 
