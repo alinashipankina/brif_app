@@ -20,13 +20,11 @@
     <script>
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                Livewire.emit('closeDetails');
-            }
-        });
-
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.fixed.inset-y-0.right-0')) {
-                e.stopPropagation();
+                @if ($showReassignModal)
+                    Livewire.dispatch('closeReassignModal');
+                @elseif ($showDetails)
+                    Livewire.dispatch('closeDetails');
+                @endif
             }
         });
     </script>

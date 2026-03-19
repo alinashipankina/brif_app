@@ -16,7 +16,7 @@
                 <button @click="open = !open"
                     class="account-hover flex items-center gap-3 px-3 py-2 rounded transition-colors">
                     <div class="w-10 h-10 bg-[#F5F5F5] flex items-center justify-center">
-                        <span class="text-base text-[#1A1A1A]">{{ substr($user->name, 0, 1) }}</span>
+                        <span class="text-base text-[#1A1A1A]">{{ mb_substr($user->name, 0, 1) }}</span>
                     </div>
                     <span class="text-base text-[#1A1A1A] hidden md:inline">{{ $user->name }}</span>
                     <svg class="w-5 h-5 text-[#6B6B6B] transition-transform duration-200"

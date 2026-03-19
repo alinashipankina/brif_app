@@ -113,12 +113,10 @@ class Step4 extends Component
                 }
                 $this->form['segments_count'] = $segmentsCount;
 
-                // Логируем данные перед отправкой в ML
                 Log::info('Отправка данных в ML сервис', ['data' => $this->form]);
 
                 $prediction = $predictionService->predict($this->form);
 
-                // Логируем ответ от ML сервиса
                 Log::info('Ответ от ML сервиса', ['prediction' => $prediction]);
 
                 if ($prediction && isset($prediction['probability'])) {

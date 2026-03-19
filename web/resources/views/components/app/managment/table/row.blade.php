@@ -1,37 +1,37 @@
 @props(['questionare'])
 
 <tr>
-    <td class="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
+    <td class="px-4 py-3 text-sm font-medium text-[#1A1A1A] w-[80px]">
         #{{ $questionare->id }}
     </td>
-    <td class="px-4 py-3 text-sm text-[#1A1A1A] break-words whitespace-normal">
+    <td class="px-4 py-3 text-sm text-[#1A1A1A] break-words whitespace-normal w-[130px]">
         {{ $questionare->name }}
     </td>
-    <td class="px-4 py-3 text-sm text-[#6B6B6B] break-words whitespace-normal">
+    <td class="px-4 py-3 text-sm text-[#6B6B6B] break-words whitespace-normal w-[130px]">
         {{ $questionare->service_type }}
     </td>
-    <td class="px-4 py-3 text-sm text-[#6B6B6B] break-words whitespace-normal">
+    <td class="px-4 py-3 text-sm text-[#6B6B6B] break-words whitespace-normal w-[100px]">
         @if ($questionare->user_id)
             <span>{{ $questionare->user->name }}</span>
         @else
             <span>-</span>
         @endif
     </td>
-    <td class="px-4 py-3">
+    <td class="px-4 py-3 w-[120px]">
         <span
             class="badge {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$questionare->status]['badge'] ?? 'badge-neutral' }} text-sm whitespace-nowrap inline-block rounded-md">
             {{ \App\Helpers\QuestionareStatus::$questionaresLabels[$questionare->status]['label'] }}
         </span>
     </td>
-    <td class="px-4 py-3 text-sm text-[#6B6B6B]">
+    <td class="px-4 py-3 text-sm text-[#6B6B6B] w-[100px]">
         {{ $questionare->created_at->format('d.m.Y') }}
         <span class="text-xs">{{ $questionare->created_at->format('H:i') }}</span>
     </td>
-    <td class="px-4 py-3 text-sm text-[#6B6B6B]">
+    <td class="px-4 py-3 text-sm text-[#6B6B6B] w-[120px]">
         {{ $questionare->updated_at->format('d.m.Y') }}
         <span class="text-xs">{{ $questionare->updated_at->format('H:i') }}</span>
     </td>
-    <td class="px-4 py-3 text-sm text-[#1A1A1A]">
+    <td class="px-4 py-3 text-sm text-[#1A1A1A] w-[100px]">
         @if ($questionare->prediction_probability)
             <div class="flex flex-col space-y-1">
                 <div class="flex items-center gap-2">
@@ -64,7 +64,7 @@
             <span class="text-gray-400">—</span>
         @endif
     </td>
-    <td>
+    <td class="w-[50px]">
         <div class="flex gap-1">
             <button wire:click="selectQuestionare({{ $questionare->id }})" class="btn btn-xs btn-ghost"
                 onclick="event.stopPropagation()">

@@ -77,7 +77,6 @@ class ManagmentPage extends Component
         $this->selectedQuestionare->status = 'Qualified';
         $this->selectedQuestionare->save();
 
-        // Обновляем заявку
         $this->selectedQuestionare = Questionare::with(['files.user', 'statusHistory.files.user', 'user'])
         ->find($this->selectedQuestionare->id);
 
@@ -163,7 +162,6 @@ class ManagmentPage extends Component
     public function selectQuestionare(int $id) {
         $questionare = Questionare::with(['files.user', 'statusHistory.files.user'])->find($id);
 
-        // Проверяем, имеет ли пользователь доступ к этой заявке
         $user = Auth::user();
 
         if (!$user->isAdmin()) {
@@ -282,21 +280,19 @@ class ManagmentPage extends Component
             $oldStatus = $this->selectedQuestionare->status;
             $oldComment = $this->selectedQuestionare->comment ?? '';
 
-            // СНАЧАЛА создаем историю
             $history = QuestionareStatusHistory::create([
                 "status" => $oldStatus,
                 "comment" => $oldComment,
                 "questionare_id" => $this->selectedQuestionare->id
             ]);
 
-            // ПОТОМ сохраняем файлы, привязывая к истории
             if (!empty($this->tempFiles)) {
                 foreach ($this->tempFiles as $tempFile) {
                     $path = $tempFile['file']->store('questionare-files/' . $this->selectedQuestionare->id, 'public');
 
                     QuestionareFile::create([
                         'questionare_id' => $this->selectedQuestionare->id,
-                        'status_history_id' => $history->id, // ВАЖНО: здесь должен быть $history->id
+                        'status_history_id' => $history->id,
                         'user_id' => Auth::id(),
                         'status' => $this->selectedStatus,
                         'original_name' => $tempFile['name'],
@@ -307,13 +303,11 @@ class ManagmentPage extends Component
                 }
             }
 
-            // Обновляем заявку
             $this->selectedQuestionare->status = $this->selectedStatus;
             $this->selectedQuestionare->comment = $this->selectedComment;
             $this->selectedQuestionare->user_id = Auth::id();
             $this->selectedQuestionare->save();
 
-            // Перезагружаем с файлами
             $this->selectedQuestionare = Questionare::with(['files', 'statusHistory.files'])->find($this->selectedQuestionare->id);
 
             $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus', 'tempFiles']);
@@ -360,19 +354,15 @@ class ManagmentPage extends Component
     public function canEditStatus(Questionare $questionare) : bool {
         $user = Auth::user();
 
-        // Админ может редактировать любые заявки
         if ($user->isAdmin()) {
             return true;
         }
 
-        // Если заявка без ответственного - можно редактировать
         if (is_null($questionare->user_id)) {
             return true;
         }
 
-        // Если заявка с ответственным, но это текущий пользователь
         if ($questionare->user_id == $user->id) {
-            // Нельзя редактировать закрытые заявки
             if (in_array($questionare->status, [
                 'ClosedIntoADeal',
                 'ClosedInRefusal',
@@ -383,7 +373,6 @@ class ManagmentPage extends Component
             return true;
         }
 
-        // Во всех остальных случаях - нельзя редактировать
         return false;
     }
 
@@ -515,18 +504,15 @@ class ManagmentPage extends Component
     {
         $user = Auth::user();
 
-        // Базовый запрос с учетом прав доступа
         $baseQuery = Questionare::query();
 
         if (!$user->isAdmin()) {
-            // Менеджер видит статистику только по доступным заявкам
             $baseQuery->where(function($q) use ($user) {
-                $q->whereNull('user_id') // Заявки без ответственного
-                ->orWhere('user_id', $user->id); // Свои заявки
+                $q->whereNull('user_id')
+                ->orWhere('user_id', $user->id);
             });
         }
 
-        // Создаем подзапросы для каждого статуса с учетом прав
         $total = (clone $baseQuery)->count();
 
         $byStatus = [];

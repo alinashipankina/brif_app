@@ -1,6 +1,6 @@
 @props(['questionare', 'users', 'selectedManagerId'])
 
-<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div class="fixed inset-0 bg-opacity-50 z-[100] flex items-center justify-center">
     <div class="bg-white w-full max-w-md p-6 border border-[#E8E8E8] shadow-xl">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-base font-medium text-[#1A1A1A] uppercase tracking-wider">

@@ -229,7 +229,7 @@
                 <label class="label mb-1.5 md:mb-2">
                     <span
                         class="label-text font-medium text-[#1A1A1A] text-xs md:text-sm uppercase tracking-wider break-words">
-                        Бюджет на управление репутацией в месяц
+                        Бюджет на контент-поддержку в месяц
                     </span>
                     <span class="text-[#6B6B6B]">*</span>
                 </label>

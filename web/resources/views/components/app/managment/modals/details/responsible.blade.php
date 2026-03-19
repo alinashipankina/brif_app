@@ -8,7 +8,7 @@
             <div class="flex items-center gap-3">
                 <div class="avatar">
                     <div class="w-10 h-10 bg-[#E8E8E8] flex items-center justify-center rounded-none">
-                        <span class="text-sm font-medium text-[#1A1A1A]">{{ substr($user->name, 0, 1) }}</span>
+                        <span class="text-sm font-medium text-[#1A1A1A]">{{ mb_substr($user->name, 0, 1) }}</span>
                     </div>
                 </div>
                 <div>
