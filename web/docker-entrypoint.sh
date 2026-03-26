@@ -16,6 +16,9 @@ done
 echo "Database is up - executing migrations"
 php artisan migrate --force
 
+echo "Seeding database..."
+php artisan db:seed --force
+
 echo "Publishing Livewire assets..."
 php artisan vendor:publish --tag=livewire:assets --force 2>/dev/null || true
 

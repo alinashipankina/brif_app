@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
                 ['email' => $userData['email']], // Условие для поиска
                 [                                 // Данные для создания
                     'name' => $userData['name'],
-                    'password' => Hash::make($userData['password']),
+                    'password' => $userData['password'],
                     'role' => $userData['role'],
                     'email_verified_at' => now(), // Автоматически подтверждаем email
                 ]
