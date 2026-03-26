@@ -1,20 +1,13 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import daisyui from "daisyui"
+
+export default {
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
-    "./resources/**/*.vue",
-    "./app/View/Components/**/*.php",
-    "./app/Livewire/**/*.php",
-    "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
+    "./resources/**/*.php",
   ],
   theme: {
     extend: {},
   },
-  plugins: [
-    require('daisyui'),
-  ],
-  daisyui: {
-    themes: ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"],
-  },
+  plugins: [daisyui],
 }

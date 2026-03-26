@@ -1,54 +1,118 @@
-FROM php:8.4-fpm
+# # Dockerfile
+# FROM php:8.4-fpm-alpine
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# # 1. системные зависимости + NodeJS
+# RUN apk add --no-cache \
+#     bash git curl zip unzip libpng-dev libxml2-dev icu-dev oniguruma-dev autoconf make g++ nodejs-current npm
+
+# # 2. PHP расширения
+# RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl
+
+# # 3. рабочая директория
+# WORKDIR /var/www/html
+
+# # 4. Composer
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# # 5. копируем только composer файлы и ставим зависимости
+# COPY composer.json composer.lock* ./
+# RUN composer install --no-dev --optimize-autoloader
+
+# # 6. копируем весь проект
+# COPY . .
+
+# # 7. prod сборка фронта
+# RUN npm install --legacy-peer-deps
+# RUN npm run build
+# RUN rm -rf node_modules
+
+# # 8. права на storage и cache
+# RUN chown -R www-data:www-data storage bootstrap/cache
+
+# # 9. expose php-fpm порт
+# EXPOSE 9000
+
+# CMD ["php-fpm"]
+
+
+FROM php:8.4-fpm-alpine
+
+# 1. системные зависимости + NodeJS + дополнительные пакеты для Composer
+RUN apk add --no-cache \
+    bash \
     git \
     curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
     zip \
     unzip \
-    nodejs \
+    libpng-dev \
+    libxml2-dev \
+    icu-dev \
+    oniguruma-dev \
+    autoconf \
+    make \
+    g++ \
+    nodejs-current \
     npm \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    # Дополнительные пакеты, которые могут понадобиться
+    libzip-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libxpm-dev \
+    libwebp-dev \
+    # Для работы git и ssh
+    openssh-client
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl
+# 2. PHP расширения (добавляем zip расширение)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    intl \
+    zip \
+    opcache
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
+# 3. рабочая директория
 WORKDIR /var/www/html
 
-# Copy composer files first (для кэширования)
-COPY composer.json composer.lock* ./
+# 4. Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies (без скриптов)
-RUN composer install --no-interaction --no-scripts --optimize-autoloader
+# 5. Копируем composer файлы
+COPY composer.json composer.lock ./
 
-# Copy the rest of the application
+# 6. Устанавливаем зависимости с увеличенным лимитом памяти и без интерактивного режима
+RUN php -d memory_limit=-1 /usr/bin/composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --prefer-dist
+
+# 7. Запускаем скрипты после установки (но только после копирования всего проекта)
+# Сначала копируем остальной проект
 COPY . .
 
-# Run composer scripts after copying artisan
-RUN composer run-script post-autoload-dump
+# 8. Теперь запускаем post-autoload-dump скрипты
+RUN composer dump-autoload --optimize --no-dev
 
-# Install NPM dependencies and build
-RUN npm install && npm run build
+# 9. prod сборка фронта
+RUN npm install --legacy-peer-deps && \
+    npm run build && \
+    rm -rf node_modules
 
-# Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+# 10. права на storage и cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
 
-# Create user
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN groupadd -g ${GROUP_ID} laravel && \
-    useradd -u ${USER_ID} -g laravel -m laravel && \
-    chown -R laravel:laravel /var/www/html
+# 11. Настройка opcache для продакшена
+RUN docker-php-ext-enable opcache
 
-USER laravel
+# 12. expose php-fpm порт
+EXPOSE 9000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["php-fpm"]
