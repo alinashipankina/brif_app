@@ -16,32 +16,47 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $users = [
+            [
             'name' => 'Эрна Саркисян',
             'email' => 'm@rbru.ru',
             'password' => Hash::make('Passw0rd2'),
             'role' => 'admin',
-        ]);
+            ],
 
-        User::factory()->create([
-            'name' => 'Александра Артюшина',
-            'email' => 'a.artyushina@rbru.ru',
-            'password' => Hash::make('Passw0rd2'),
-            'role' => 'manager',
-        ]);
+            [
+                'name' => 'Александра Артюшина',
+                'email' => 'a.artyushina@rbru.ru',
+                'password' => Hash::make('Passw0rd2'),
+                'role' => 'manager',
+            ],
 
-        User::factory()->create([
-            'name' => 'Виктория Зинкина',
-            'email' => 'v.zinkina@rbru.ru',
-            'password' => Hash::make('Passw0rd2'),
-            'role' => 'manager',
-        ]);
+            [
+                'name' => 'Виктория Зинкина',
+                'email' => 'v.zinkina@rbru.ru',
+                'password' => Hash::make('Passw0rd2'),
+                'role' => 'manager',
+            ],
 
-        User::factory()->create([
-            'name' => 'Марина Дюка',
-            'email' => 'm.dyuka@rbru.ru',
-            'password' => Hash::make('Passw0rd2'),
-            'role' => 'manager',
-        ]);
+            [
+                'name' => 'Марина Дюка',
+                'email' => 'm.dyuka@rbru.ru',
+                'password' => Hash::make('Passw0rd2'),
+                'role' => 'manager',
+            ],
+        ];
+
+        // Создаем пользователей только если их нет
+        foreach ($users as $userData) {
+            User::firstOrCreate(
+                ['email' => $userData['email']], // Условие для поиска
+                [                                 // Данные для создания
+                    'name' => $userData['name'],
+                    'password' => Hash::make($userData['password']),
+                    'role' => $userData['role'],
+                    'email_verified_at' => now(), // Автоматически подтверждаем email
+                ]
+            );
+        }
     }
 }

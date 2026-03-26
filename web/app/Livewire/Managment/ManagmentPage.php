@@ -49,8 +49,19 @@ class ManagmentPage extends Component
 
     public function openReassignModal()
     {
+        if (!$this->selectedQuestionare) {
+            session()->flash('error', 'Заявка не выбрана');
+            return;
+        }
+
         $this->showReassignModal = true;
         $this->selectedManagerId = $this->selectedQuestionare->user_id;
+    }
+
+    public function closeReassignModal()
+    {
+        $this->showReassignModal = false;
+        $this->selectedManagerId = null;
     }
 
     public function reassignManager()
@@ -64,25 +75,39 @@ class ManagmentPage extends Component
             'selectedManagerId' => 'required|exists:users,id',
         ]);
 
-        $oldStatus = $this->selectedQuestionare->status;
-        $oldComment = $this->selectedQuestionare->comment ?? '';
+        // Получаем менеджера
+        $manager = User::find($this->selectedManagerId);
 
+        if (!$manager) {
+            session()->flash('error', 'Менеджер не найден');
+            return;
+        }
+
+        $oldStatus = $this->selectedQuestionare->status;
+        $oldManagerName = $this->selectedQuestionare->user?->name ?? 'не назначен';
+
+        // Создаем запись в истории
         $history = QuestionareStatusHistory::create([
             "status" => $oldStatus,
-            "comment" => "Переназначение: " . ($this->selectedQuestionare->user->name ?? 'не назначен') . " → " . User::find($this->selectedManagerId)->name,
+            "comment" => "Переназначение: {$oldManagerName} → {$manager->name}",
             "questionare_id" => $this->selectedQuestionare->id
         ]);
 
-        $this->selectedQuestionare->user_id = $this->selectedManagerId;
+        // Обновляем заявку
+        $this->selectedQuestionare->user_id = $manager->id;
         $this->selectedQuestionare->status = 'Qualified';
         $this->selectedQuestionare->save();
 
+        // Перезагружаем заявку с отношениями
         $this->selectedQuestionare = Questionare::with(['files.user', 'statusHistory.files.user', 'user'])
-        ->find($this->selectedQuestionare->id);
+            ->find($this->selectedQuestionare->id);
 
+        // Закрываем модалку
         $this->showReassignModal = false;
+        $this->selectedManagerId = null; // Сбрасываем выбор
+
         $this->dispatch('manager-reassigned');
-        session()->flash('message', 'Ответственный изменен, статус обновлен на "Квалификация"');
+        session()->flash('message', "Ответственный изменен на {$manager->name}, статус обновлен на 'Квалификация'");
     }
 
     public function downloadBrifPdf(int $id)
@@ -160,7 +185,7 @@ class ManagmentPage extends Component
     }
 
     public function selectQuestionare(int $id) {
-        $questionare = Questionare::with(['files.user', 'statusHistory.files.user'])->find($id);
+        $questionare = Questionare::with(['files.user', 'statusHistory.files.user', 'user'])->find($id);
 
         $user = Auth::user();
 
@@ -176,6 +201,9 @@ class ManagmentPage extends Component
         $this->selectedQuestionare = $questionare;
         $this->showDetails = true;
         $this->reset(['selectedStatus', 'selectedComment', 'showSetStatus', 'tempFiles']);
+
+        // Инициализируем selectedManagerId для модалки
+        $this->selectedManagerId = $questionare->user_id;
     }
 
     public function closeDetails() {
@@ -565,6 +593,8 @@ class ManagmentPage extends Component
             'users' => $this->users,
             'statistics' => $this->statistics,
             'isAdmin' => Auth::user()->isAdmin(),
+            'showReassignModal' => $this->showReassignModal,
+            'selectedManagerId' => $this->selectedManagerId,
         ]);
     }
 

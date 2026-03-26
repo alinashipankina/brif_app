@@ -1,8 +1,6 @@
-import {
-    defineConfig
-} from 'vite';
+import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
@@ -13,11 +11,18 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        cors: {
-            origin: "http://localhost:8000",
-            credentials: true
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: 'localhost',
+            port: 5173,
         },
-        host: 'localhost',
-        port: 5173
+        watch: {
+            usePolling: true,
+        },
+    },
+    optimizeDeps: {
+        include: ['daisyui'],
     },
 });

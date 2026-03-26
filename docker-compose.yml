@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8'  # Можете удалить эту строку, warning не критичен
 
 services:
   db:
@@ -13,6 +13,13 @@ services:
       - mysql_data:/var/lib/mysql
     labels:
       - docker-volume-backup.stop-during-backup=true
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pPassw0rd2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
   ml-service:
     build: ./ml
@@ -28,6 +35,44 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - app-network
+  
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        - USER_ID=${USER_ID:-1000}
+        - GROUP_ID=${GROUP_ID:-1000}
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    restart: always
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=brif
+      - DB_USERNAME=root
+      - DB_PASSWORD=Passw0rd2
+      - ML_SERVICE_URL=http://ml-service:5000
+    volumes:
+      - ./web:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    networks:
+      - app-network
+    command: >
+      sh -c "while ! php artisan db:show 2>/dev/null; do sleep 1; done && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=8000"
   
   backup:
     image: offen/docker-volume-backup:v2
@@ -47,7 +92,13 @@ services:
       - ml_data:/backup/ml_data:ro
     depends_on:
       - db
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
   ml_data:
+
+networks:
+  app-network:
+    driver: bridge
