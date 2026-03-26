@@ -97,22 +97,35 @@ RUN php -d memory_limit=-1 /usr/bin/composer install \
 # Сначала копируем остальной проект
 COPY . .
 
-# 8. Теперь запускаем post-autoload-dump скрипты
+# 8. Создаем .env файл для production
+RUN cp .env.example .env
+
+# 9. Теперь запускаем post-autoload-dump скрипты
 RUN composer dump-autoload --optimize --no-dev
 
-# 9. prod сборка фронта
+# 10. prod сборка фронта
 RUN npm install --legacy-peer-deps && \
     npm run build && \
     rm -rf node_modules
 
-# 10. права на storage и cache
+# 11. Генерируем APP_KEY
+RUN php artisan key:generate
+
+# 12. права на storage и cache
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
-# 11. Настройка opcache для продакшена
+# 13. Копируем приложение во временную директорию для последующего копирования в volume
+RUN cp -rp /var/www/html /tmp/app
+
+# 14. Копируем и настраиваем entrypoint скрипт
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# 15. Настройка opcache для продакшена
 RUN docker-php-ext-enable opcache
 
-# 12. expose php-fpm порт
+# 16. expose php-fpm порт
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT ["docker-entrypoint.sh"]

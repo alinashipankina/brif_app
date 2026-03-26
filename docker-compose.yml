@@ -1,4 +1,4 @@
-version: '3.8'  # Можете удалить эту строку, warning не критичен
+version: "3.8" # Можете удалить эту строку, warning не критичен
 
 services:
   db:
@@ -7,14 +7,23 @@ services:
       - MYSQL_ROOT_PASSWORD=Passw0rd2
       - MYSQL_DATABASE=brif
     ports:
-      - '3307:3306'
+      - "3307:3306"
     restart: always
     volumes:
       - mysql_data:/var/lib/mysql
     labels:
       - docker-volume-backup.stop-during-backup=true
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pPassw0rd2"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-pPassw0rd2",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,19 +46,21 @@ services:
       retries: 3
     networks:
       - app-network
-  
+
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
-    volumes:
-      - ./web:/var/www/html:delegated
     environment:
       APP_ENV: production
       APP_DEBUG: false
+    volumes:
+      - web-app:/var/www/html
     depends_on:
-      - db
-      - ml-service
+      db:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -61,7 +72,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html:cached
+      - web-app:/var/www/html:ro
     depends_on:
       - web
     networks:
@@ -91,6 +102,7 @@ services:
 volumes:
   mysql_data:
   ml_data:
+  web-app:
 
 networks:
   app-network:
