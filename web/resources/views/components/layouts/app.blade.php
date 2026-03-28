@@ -29,7 +29,7 @@
         @endif
     </main>
 
-    @livewireScripts
+    @livewireScripts(['secure' => true])
     @stack('scripts')
 </body>
 

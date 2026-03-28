@@ -4,7 +4,7 @@ services:
   db:
     image: mysql:9.5.0
     environment:
-      - MYSQL_ROOT_PASSWORD=Passw0rd2
+      - MYSQL_ROOT_PASSWORD=bxC2TNAR
       - MYSQL_DATABASE=brif
     ports:
       - "3307:3306"
@@ -22,7 +22,7 @@ services:
           "-h",
           "localhost",
           "-uroot",
-          "-pPassw0rd2",
+          "-pbxC2TNAR",
         ]
       interval: 10s
       timeout: 5s
@@ -55,6 +55,8 @@ services:
       APP_ENV: production
       APP_DEBUG: false
       ML_API_URL: http://ml-service:5000
+    env_file:
+     ./web/.env
     volumes:
       - web-app:/var/www/html
     depends_on:
@@ -71,7 +73,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8095:80"
     volumes:
       - web-app:/var/www/html:ro
     depends_on:
