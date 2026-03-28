@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
 <head>
+    <title>@yield('title', 'Бриф на оказание услуг')</title>
     @include('livewire.brif.partials.head')
 </head>
 

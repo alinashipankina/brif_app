@@ -1,3 +1,4 @@
+@section('title', 'Вход в систему')
 <x-layouts.auth>
     <div class="flex flex-col gap-8">
         <div class="flex justify-center mb-3 md:mb-4">
