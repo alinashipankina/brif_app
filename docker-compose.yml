@@ -52,11 +52,9 @@ services:
       context: ./web
       dockerfile: Dockerfile
     environment:
-      APP_ENV: production
-      APP_DEBUG: false
       ML_API_URL: http://ml-service:5000
     env_file:
-     ./web/.env
+      ./web/.env
     volumes:
       - web-app:/var/www/html
     depends_on:
