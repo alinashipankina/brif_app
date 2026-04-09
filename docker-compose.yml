@@ -74,6 +74,7 @@ services:
       - "8095:80"
     volumes:
       - web-app:/var/www/html:ro
+      - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - web
     networks:
